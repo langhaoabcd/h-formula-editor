@@ -8,7 +8,7 @@ import TodoLangFormattingProvider from "./tbexpLangFormattingProvider";
 import { IFieldMeta, MetaValueType } from "@toy-box/meta-schema";
 import { functionNames } from "./tbexp.function";
 import { IRange } from "monaco-editor-core";
-import { getPathMeta, schemaMap } from "../language-service/schemaMap.data";
+import { getPathMeta, localSchemaMap, schemaMap } from "../language-service/schemaMap.data";
 import { theme } from "./tbexp.theme";
 
 const VariablePrefix = '$';
@@ -43,7 +43,7 @@ const createVariableDependencyProposals = (
         label: `${cate}${key}`,
         kind: getFieldKind(schemaMap[key].type),
         detail: schemaMap[key].type,
-        insertText: schemaMap[key].type === MetaValueType.ARRAY ? `${cate}${key}[]` : `${cate}${key}`,
+        insertText: schemaMap[key].type === MetaValueType.ARRAY ? `${cate == '$' ? cate : ''}${key}[]` : `${cate == '$' ? cate : ''}${key}`,
         range,
     }));
 };
@@ -120,23 +120,21 @@ export function setupLanguage() {
                 startColumn: wordAtPositon.startColumn,
                 endColumn: wordAtPositon.endColumn,
             };
+            const content = model.getLineContent(position.lineNumber)
+            const input = content[position.column - 2]
             //提示可用资源变量
             if (wordAtPositon.word[0] === VariablePrefix) {
                 return {
                     suggestions: createVariableDependencyProposals(schemaMap, range,'$'),
                 };
             }
-            // if (wordAtPositon.word[0] === "!"){
-            //     return {
-            //         suggestions: createVariableDependencyProposals(schemaMap, range,'!'),
-            //     };
-            // }
-
+            if (input === "!"){
+                return {
+                    suggestions: createVariableDependencyProposals(localSchemaMap, range,'!'),
+                };
+            }
             //提示‘点出来的’可用属性
-            if (wordAtPositon.word === '') {
-                //$currentUser.project.project2.id
-                //SUM(2,3,$currentUser.project.project + 2)
-                //SUM(2,3,($currentUser.project[2].project2222 + 2),2)
+            if (input === '.') {
                 const match = model
                     .findMatches(PathRegExpStr, true, true, true, null, true)
                     .find(
@@ -147,10 +145,10 @@ export function setupLanguage() {
                 if (match && match.matches) {
                     const content = match.matches[0];
                     console.log('当前内容', content);
-                    let arr = content.replace(VariablePrefix, '').split('.');
+                    let arr = content.replace(VariablePrefix, '').replace('!','').split('.');
                     return {
                         suggestions: await createAttributeDependencyProposals(
-                            schemaMap,
+                            Object.assign(schemaMap, localSchemaMap)  ,
                             arr,
                             range,
                             // getRemoteSchema,
@@ -159,7 +157,6 @@ export function setupLanguage() {
                     // }
                 }
             }
-
             // const match = model
             //     .findMatches(PathRegExpStr, true, true, true, null, true)
             //     .find(

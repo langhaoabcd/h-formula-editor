@@ -1,12 +1,12 @@
 import * as React from 'react';
 import * as monaco from 'monaco-editor-core';
+import { IFieldMeta } from '@toy-box/meta-schema';
+// import { SchemaMapWraper } from '../../language-service/schemaMap.data';
 
 interface IEditorPorps {
   language: string;
 }
-
 let edt: any;
-
 const Editor: React.FC<IEditorPorps> = (props: IEditorPorps) => {
   let divNode;
   const assignRef = React.useCallback((node) => {
@@ -14,23 +14,19 @@ const Editor: React.FC<IEditorPorps> = (props: IEditorPorps) => {
     divNode = node;
   }, []);
 
+  const initSchemaMap=() =>{
+    // SchemaMapWraper.getInstance().setSchemaMap(schemaMap);//todo store redux
+  }
   const setValue = () => {
     edt.setValue('COUNT(1,2,3)');
   };
   const getValue = () => {
     alert(edt.getValue());
   };
-  const setLocalVariable = () => {
-    const localVar = '{!}';
-    const p = edt.getPosition();
-    edt.executeEdits(edt.getValue(), [
-      {
-        range: new monaco.Range(p.lineNumber, p.column, p.lineNumber, p.column),
-        text: localVar, //nextProps.setRuleContent[nextProps.setRuleContent.length - 1]
-      },
-    ]);
-    edt.focus();
-  };
+  const getReturnType=()=>{
+    alert('');//todo 获取redux?
+  }
+
   React.useEffect(() => {
     if (divNode) {
       const editor = monaco.editor.create(divNode, {
@@ -45,9 +41,15 @@ const Editor: React.FC<IEditorPorps> = (props: IEditorPorps) => {
 
   return (
     <div>
-      <button onClick={setValue}>set</button>
-      <button onClick={getValue}>get value</button>
-      <button onClick={setLocalVariable}>insert</button>
+      <div>
+        <button disabled onClick={initSchemaMap}>
+          initSchemaMap
+        </button>
+        <button onClick={setValue}>set value</button>
+        <button onClick={getValue}>get value</button>
+        <button onClick={getReturnType}>get returnType</button>
+        {/* <span> 约定：全局变量$variable; 局部变量!variable</span> */}
+      </div>
       <div ref={assignRef} style={{ height: '90vh' }}></div>
     </div>
   );

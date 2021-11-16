@@ -3,6 +3,33 @@ import { IFieldMeta, MetaValueType } from "@toy-box/meta-schema";
 import { DataType, fromMetaType, TYPE } from "../formulaType";
 import { DataValueType } from "./FormulaParserChecker";
 
+export const getTypeHook = (variable: string) => {
+  if (variable === "id") {
+    return new DataType(TYPE.STRING);
+  }
+  return new DataType(TYPE.NUMBER);
+}
+// export class SchemaMapWraper {
+//   static instance: SchemaMapWraper
+//   static getInstance() {
+//     if(!SchemaMapWraper.instance){
+//       SchemaMapWraper.instance = new SchemaMapWraper()
+//     }
+//     return SchemaMapWraper.instance;
+//   }
+//   private _schemaMap: Record<string, IFieldMeta>;
+//   setSchemaMap = (schemaMap: Record<string, IFieldMeta>)=>{
+//     this._schemaMap = schemaMap;
+//   }
+//   getSchemaMap = ()=>{
+//     if(this._schemaMap!=undefined){
+//       return this._schemaMap;
+//     } else{
+//       return schemaMap;
+//     }
+//   }
+// }
+
 export const schemaMap: Record<string, IFieldMeta> = {
   currentUser: {
     key: '123',
@@ -48,10 +75,10 @@ export const schemaMap: Record<string, IFieldMeta> = {
                 key: 'name3',
                 name: 'Name3',
                 type: 'string',
-              }
-            }
-          }
-        }
+              },
+            },
+          },
+        },
       },
       books: {
         key: '444',
@@ -82,12 +109,12 @@ export const schemaMap: Record<string, IFieldMeta> = {
                     type: 'integer',
                     name: 'age',
                   },
-                }
-              }
+                },
+              },
             },
-          }
-        }
-      }
+          },
+        },
+      },
     },
   },
   tags: {
@@ -95,9 +122,9 @@ export const schemaMap: Record<string, IFieldMeta> = {
     name: 'tags',
     type: 'array',
     items: {
-      type: 'string'
+      type: 'string',
     },
-    required: true
+    required: true,
   },
   books: {
     key: '444',
@@ -133,11 +160,11 @@ export const schemaMap: Record<string, IFieldMeta> = {
                 type: 'string',
                 name: 'country',
               },
-            }
-          }
+            },
+          },
         },
-      }
-    }
+      },
+    },
   },
   //外键关联
   // ObjectRefId:{
@@ -157,15 +184,101 @@ export const schemaMap: Record<string, IFieldMeta> = {
   // },
 };
 
-export const getTypeHook = (variable: string) => {
-  if (variable === "id") {
-    return new DataType(TYPE.STRING);
+export const localSchemaMap: Record<string, IFieldMeta> = {
+  address: {
+    key: 'address',
+    name: 'Address',
+    type: 'object',
+    properties: {
+      aid: {
+        key: 'aid',
+        name: 'ID',
+        type: 'number',
+      },
+      aname: {
+        key: 'aname',
+        name: 'Name',
+        type: 'string',
+      },
+      aproject: {
+        key: 'aproject',
+        name: 'Project',
+        type: 'object',
+        properties: {
+          aid2: {
+            key: 'aid2',
+            name: 'ID2',
+            type: 'number',
+          },
+          aname2: {
+            key: 'aname2',
+            name: 'Name2',
+            type: 'string',
+          },
+          aproject2: {
+            key: 'aproject2',
+            name: 'Project2',
+            type: 'object',
+            properties: {
+              aid3: {
+                key: 'aid3',
+                name: 'ID3',
+                type: 'number',
+              },
+              aname3: {
+                key: 'aname3',
+                name: 'Name3',
+                type: 'string',
+              },
+            },
+          },
+        },
+      },
+      abooks: {
+        key: '444',
+        name: 'abooks',
+        type: 'array',
+        items: {
+          type: 'object',
+          properties: {
+            aprice: {
+              key: 'aprice',
+              type: 'number',
+              name: 'price',
+            },
+            aauthors: {
+              key: 'aauthors',
+              type: 'array',
+              name: 'authors',
+              items: {
+                type: 'object',
+                properties: {
+                  aname: {
+                    key: 'aname',
+                    type: 'string',
+                    name: 'name',
+                  },
+                  age: {
+                    key: 'age',
+                    type: 'integer',
+                    name: 'age',
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
   }
-  return new DataType(TYPE.NUMBER);
-}
+};
 
-export const getVariableType = (text: string) => {
-  let arr = text.replace(/^\{!/gi, '').replace(/\}$/gi, '').replace('$', '').split('.');
+/**
+ * type =0 全局变量 1局部变量
+*/
+export const getVariableType = (text: string,type:number = 0) => {
+  let arr = text.replace('!', '').replace('$', '').split('.');
+  // text.replace(/^\{!/gi, '').replace(/\}$/gi, '').replace('$', '').split('.');
   arr.forEach((v, i, arr) => {
     if (v.indexOf('[') > -1) {
       arr[i] = v.substring(0, v.indexOf('['));
@@ -173,9 +286,12 @@ export const getVariableType = (text: string) => {
   })
   let nextPath = arr[0];
   let fieldMeta = schemaMap[nextPath];
+  if (type == 1){
+    fieldMeta = localSchemaMap[nextPath];
+  } 
   let result = getPathMeta(fieldMeta, arr);
   if (result != undefined) {
-    return fromMetaType(result.type);
+    return fromMetaType(result.type =='array'?result.items.type:result.type);
   }
   return new DataType(TYPE.UNKNOW);
 }
@@ -259,5 +375,3 @@ export const getPathMetaAsync = async (
   }
   return await getPathMetaAsync(currentMeta, path);//, getRemoteSchema);
 };
-
-

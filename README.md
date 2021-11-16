@@ -8,6 +8,10 @@ Check out my articles:
 [Part 2: Implement language services, auto-completion, syntax and semantic validation and auto-formatting](https://medium.com/better-programming/create-a-custom-web-editor-using-typescript-react-antlr-and-monaco-editor-bcfc7554e446)  
 
 
+# 特殊函数
+IF 和 SWITCH 返回类型UNKNOW
+TODAY 和 NOW 没有入参
+
 # Formula
 ## 1.BaseMath
 1

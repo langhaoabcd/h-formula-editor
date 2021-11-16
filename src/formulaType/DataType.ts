@@ -45,28 +45,28 @@ export class DataType {
     return this.types.some((t) => t.type === TYPE.UNKNOW);
   }
 
-  get isNull(){
+  get isNull() {
     return this.types.some((t) => t.type === TYPE.NULL);
   }
 
   get isDecimalLike() {
-    return this.types.every((t) => t.type === TYPE.NUMBER);
+    return this.types.every((t) => t.type === TYPE.NUMBER) || this.types.every(x => x.type == TYPE.UNKNOW);
   }
 
   get isTextLike() {
-    return this.types.every((t) => t.type === TYPE.STRING);
+    return this.types.every((t) => t.type === TYPE.STRING) || this.types.every(x => x.type == TYPE.UNKNOW);
   }
 
   get isBoolean() {
-    return this.types.every((t) => t.type === TYPE.BOOLEAN);
+    return this.types.every((t) => t.type === TYPE.BOOLEAN) || this.types.every(x => x.type == TYPE.UNKNOW);
   }
 
   get isDateLike() {
-    return this.types.every((t) => t.type === TYPE.DATE);
+    return this.types.every((t) => t.type === TYPE.DATE) || this.types.every(x => x.type == TYPE.UNKNOW);
   }
 
   get isArray() {
-    return this.types.every((t) => t.type === TYPE.ARRAY);
+    return this.types.every((t) => t.type === TYPE.ARRAY) || this.types.every(x => x.type == TYPE.UNKNOW);
   }
 }
 
@@ -92,6 +92,8 @@ export const fromMetaType = (type: MetaValueType) => {
       return new DataType(TYPE.STRING);
     case MetaValueType.OBJECT_ID:
       return new DataType(TYPE.STRING);
+    case MetaValueType.OBJECT:
+      return new DataType(TYPE.OBJECT);
     default:
       return new DataType(TYPE.UNKNOW);
   }

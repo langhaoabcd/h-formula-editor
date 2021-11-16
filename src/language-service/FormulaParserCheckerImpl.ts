@@ -69,7 +69,7 @@ export class FormulaParserCheckerImpl implements FormulaParserChecker {
   exitVariableExpression(ctx: VariableExpressionContext) {
     const text = ctx.variable().FieldLiteral().text;
     // const dtype = this.getFieldType(text);//注入的方式
-    const dtype = getVariableType(text);
+    const dtype = getVariableType(text, text.indexOf('$') > -1 ? 0 : 1);
     this.parserMap.set(
       ctx,
       new ArgumentItem(dtype, ctx),

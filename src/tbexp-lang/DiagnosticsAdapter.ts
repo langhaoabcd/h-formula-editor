@@ -27,7 +27,6 @@ export default class DiagnosticsAdapter {
         const model = monaco.editor.getModel(resource);
         // add the error markers and underline them with severity of Error
         monaco.editor.setModelMarkers(model, languageID, errorMarkers.map(toDiagnostics));
-
     }
 }
 function toDiagnostics(error: ITbexpLangError): monaco.editor.IMarkerData {
