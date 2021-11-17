@@ -1,16 +1,16 @@
 import * as monaco from "monaco-editor-core";
 
-import Uri = monaco.Uri;
+// import Uri = monaco.Uri;
 import { TbexpLangWorker } from './tbexpLangWorker';
 import { languageID } from './config';
 
 export class WorkerManager {
 
 	private worker: monaco.editor.MonacoWebWorker<TbexpLangWorker>;
-	private workerClientProxy: Promise<TbexpLangWorker>;
+	private workerClientProxy: Promise<TbexpLangWorker> | undefined;
 
 	constructor() {
-		this.worker = null;
+		this.worker = null as any;
 	}
 
 	private getClientproxy(): Promise<TbexpLangWorker> {
@@ -32,7 +32,7 @@ export class WorkerManager {
 		return this.workerClientProxy;
 	}
 
-	async getLanguageServiceWorker(...resources: Uri[]): Promise<TbexpLangWorker> {
+	async getLanguageServiceWorker(...resources: monaco.Uri[]): Promise<TbexpLangWorker> {
 		const _client: TbexpLangWorker = await this.getClientproxy();
 		await this.worker.withSyncedResources(resources)
 		return _client;

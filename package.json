@@ -5,14 +5,31 @@
   "scripts": {
     "dev": "npm start",
     "start": "webpack-dev-server --hot --open",
-    "antlr4ts": "antlr4ts  ./FormulaParser.g4 ./FormulaLexer.g4 -o ./src/ANTLR"
+    "antlr4ts": "antlr4ts  ./FormulaParser.g4 ./FormulaLexer.g4 -o ./src/ANTLR",
+    "dumi:dev": "dumi dev"
   },
   "author": "Open",
   "license": "ISC",
+  "main": "dist/index.js",
+  "module": "dist/index.esm.js",
+  "typings": "dist/index.d.ts",
+  "gitHooks": {
+    "pre-commit": "lint-staged"
+  },
+  "lint-staged": {
+    "*.{js,jsx,less,md,json}": [
+      "prettier --write"
+    ],
+    "*.ts?(x)": [
+      "prettier --parser=typescript --write"
+    ]
+  },
   "dependencies": {
     "@toy-box/formula": "^1.0.13",
     "@toy-box/meta-schema": "^2.0.3",
     "antlr4ts": "^0.5.0-alpha.4",
+    "dumi": "^1.1.32",
+    "father-build": "^1.20.5-0",
     "monaco-editor-core": "^0.18.1",
     "react": "^16.8.6",
     "react-dom": "^16.8.6"

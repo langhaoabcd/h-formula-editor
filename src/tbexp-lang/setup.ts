@@ -95,7 +95,7 @@ const getFieldKind = (type: string) => {
 
 export function setupLanguage() {
     (window as any).MonacoEnvironment = {
-        getWorkerUrl: function (moduleId, label) {
+        getWorkerUrl: function (moduleId: any, label: string) {
             if (label === languageID)
                 return "./tbexpLangWorker.js";
             return './editor.worker.js';

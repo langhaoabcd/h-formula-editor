@@ -1,8 +1,8 @@
 import * as monaco from "monaco-editor-core";
-import IRichLanguageConfiguration = monaco.languages.LanguageConfiguration;
-import ILanguage = monaco.languages.IMonarchLanguage;
+// import IRichLanguageConfiguration = monaco.languages.LanguageConfiguration;
+// import ILanguage = monaco.languages.IMonarchLanguage;
 
-export const richLanguageConfiguration: IRichLanguageConfiguration = {
+export const richLanguageConfiguration: monaco.languages.LanguageConfiguration = {
     // If we want to support code folding, brackets ... ( [], (), {}....), we can override some properties here
     // check the doc
      wordPattern:
@@ -31,7 +31,7 @@ export const richLanguageConfiguration: IRichLanguageConfiguration = {
   ],
 };
 
-export const monarchLanguage = <ILanguage>{
+export const monarchLanguage = <monaco.languages.IMonarchLanguage>{
     defaultToken: '',
     tokenPostfix: '.tbexp',
     ignoreCase: false,

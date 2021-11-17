@@ -8,7 +8,7 @@ interface IEditorPorps {
 let edt: any;
 
 const Editor: React.FC<IEditorPorps> = (props: IEditorPorps) => {
-  let divNode;
+  let divNode: HTMLElement;
   const assignRef = React.useCallback((node) => {
     // On mount get the ref of the div and assign it the divNode
     divNode = node;
