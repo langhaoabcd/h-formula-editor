@@ -2,6 +2,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { Editor } from './components/Editor/Editor';
 import { IFieldMeta, MetaValueType } from '@toy-box/meta-schema';
+import { ITbexpLangErrorAndCode } from './language-service/TbexpLangErrorListener';
 
 const globalVariables: Record<string, IFieldMeta> = {
   currentUser: {
@@ -252,9 +253,9 @@ const flowAllResource ={
 }
 const formulaText: string = 'COUNT(1)';
 const formulaType: MetaValueType| undefined = undefined;// MetaValueType.STRING;
-const callback = (res) => {
-  console.log('回调结果：',res);
-}
+const callback = (res: ITbexpLangErrorAndCode) => {
+  console.log('回调结果：', res);
+};
 
 const App = () => (
   <Editor
