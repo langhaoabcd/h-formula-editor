@@ -16,22 +16,22 @@ TODAY 和 NOW 没有入参
 ## 1.BaseMath
 1
 "aa"
-{!current.id})
+current.id
 1 + 2 * 3 / 2
-(1 * 2) + {!current.id}
+(1 * 2) + $current.id
 date ??
 time ??
 
 ## 2.Function
 COUNT(1,2)
-COUNT(1,2,{!current.id})
+COUNT(1,2,current.id)
 COUNT(1,2,1+2)
 COUNT(1,2,SUM(1,2))
 
 ## 3.Compare 暂仅支持数字
 (1+20) +179 > 199
-179 = {!current.id}
+179 = $current.id
 199 < 229
 (1+20) +179 >= 199
-179 <= {!current.id}
+179 <= current.id
 (1+20) +179 <> 199
