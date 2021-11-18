@@ -8,7 +8,7 @@ import TodoLangFormattingProvider from "./tbexpLangFormattingProvider";
 import { IFieldMeta, MetaValueType } from "@toy-box/meta-schema";
 import { functionNames } from "./tbexp.function";
 import { IRange } from "monaco-editor-core";
-import { getPathMeta, localSchemaMap, schemaMap } from "../language-service/schemaMap.data";
+import { getPathMeta, ContextResource } from "../language-service/schemaMap.data";
 import { theme } from "./tbexp.theme";
 
 const VariablePrefix = '$';
@@ -23,37 +23,48 @@ const parsePath = (pathStr: string) => {
 };
 
 const createFunctionDependencyProposals = (
+    schemaMap: Record<string, IFieldMeta>,
     functionNames: string[],
     range: IRange,
 ) => {
-    return functionNames.map((name) => ({
+    const fns = functionNames.map((name) => ({
         label: name,
         kind: monaco.languages.CompletionItemKind.Function,
         insertText: `${name}()`,
         range,
     }));
+    const vars = Object.keys(schemaMap || {}).map((key) => ({
+        label: `${key}`,
+        kind: getFieldKind(schemaMap[key].type),
+        detail: schemaMap[key].type,
+        insertText: schemaMap[key].type === MetaValueType.ARRAY ? `${key}[]` : `${key}`,
+        range,
+    }));
+    return fns.concat(vars);
 };
 
 const createVariableDependencyProposals = (
     schemaMap: Record<string, IFieldMeta>,
     range: IRange,
-    cate:string
+    cate: string
 ) => {
     return Object.keys(schemaMap || {}).map((key) => ({
         label: `${cate}${key}`,
         kind: getFieldKind(schemaMap[key].type),
         detail: schemaMap[key].type,
-        insertText: schemaMap[key].type === MetaValueType.ARRAY ? `${cate == '$' ? cate : ''}${key}[]` : `${cate == '$' ? cate : ''}${key}`,
+        insertText: schemaMap[key].type === MetaValueType.ARRAY ? `${cate}${key}[]` : `${cate}${key}`,
         range,
     }));
 };
 
 const createAttributeDependencyProposals = async (
-    schemaMap: Record<string, IFieldMeta>,
+    // schemaMap: Record<string, IFieldMeta>,
     path: string[],
     range: IRange,
+    schemaMapModel: ContextResource
     // getRemoteSchema: GetRemoteSchema,
 ) => {
+    const schemaMap= Object.assign(schemaMapModel.globalVariables, schemaMapModel.localVariable);
     path.forEach((v, i, arr) => {
         if (v.indexOf('[') > -1) {
             arr[i] = v.substring(0, v.indexOf('['));
@@ -84,7 +95,7 @@ const getFieldKind = (type: string) => {
         case MetaValueType.ARRAY: {
             return monaco.languages.CompletionItemKind.Enum;
         }
-        case MetaValueType.OBJECT_ID:{
+        case MetaValueType.OBJECT_ID: {
             //暂未实现
         }
         default: {
@@ -93,7 +104,7 @@ const getFieldKind = (type: string) => {
     }
 }
 
-export function setupLanguage() {
+export function setupLanguage(schemaMapModel: ContextResource, formulaRtType: MetaValueType, onChange:any) {
     (window as any).MonacoEnvironment = {
         getWorkerUrl: function (moduleId, label) {
             if (label === languageID)
@@ -104,9 +115,9 @@ export function setupLanguage() {
     monaco.languages.register(languageExtensionPoint);
     monaco.languages.setMonarchTokensProvider(languageID, monarchLanguage);
     monaco.languages.setLanguageConfiguration(languageID, richLanguageConfiguration);
-    monaco.editor.defineTheme('tbexpTheme',theme);
+    monaco.editor.defineTheme('tbexpTheme', theme);
     monaco.languages.registerCompletionItemProvider(languageID, {
-        triggerCharacters: ['.','!','$'],
+        triggerCharacters: ['.', '!', '$'],
         provideCompletionItems: async (model, position) => {
             const wordAtPositon = model.getWordUntilPosition(position);
             console.log(
@@ -122,15 +133,10 @@ export function setupLanguage() {
             };
             const content = model.getLineContent(position.lineNumber)
             const input = content[position.column - 2]
-            //提示可用资源变量
+            //提示可用全局变量
             if (wordAtPositon.word[0] === VariablePrefix) {
                 return {
-                    suggestions: createVariableDependencyProposals(schemaMap, range,'$'),
-                };
-            }
-            if (input === "!"){
-                return {
-                    suggestions: createVariableDependencyProposals(localSchemaMap, range,'!'),
+                    suggestions: createVariableDependencyProposals(schemaMapModel.globalVariables, range, '$'),
                 };
             }
             //提示‘点出来的’可用属性
@@ -145,44 +151,22 @@ export function setupLanguage() {
                 if (match && match.matches) {
                     const content = match.matches[0];
                     console.log('当前内容', content);
-                    let arr = content.replace(VariablePrefix, '').replace('!','').split('.');
+                    let arr = content.replace(VariablePrefix, '').replace('!', '').split('.');
                     return {
                         suggestions: await createAttributeDependencyProposals(
-                            Object.assign(schemaMap, localSchemaMap)  ,
+                            // Object.assign(schemaMapModel.getGlobalVariables, schemaMapModel.getLocalVariables),
                             arr,
                             range,
+                            schemaMapModel
                             // getRemoteSchema,
                         ),
                     };
                     // }
                 }
             }
-            // const match = model
-            //     .findMatches(PathRegExpStr, true, true, true, null, true)
-            //     .find(
-            //         (match) =>
-            //             match.range.endLineNumber === position.lineNumber &&
-            //             match.range.endColumn === wordAtPositon.endColumn - 1,
-            //     );
-            // if (match && match.matches) {
-            //     console.log(match.matches[0])
-            // }
-            //     const pathArr = parsePath(match.matches[0]);
-            //     return await {
-            //         suggestions: await createAttributeDependencyProposals(
-            //             schemaMap,
-            //             pathArr,
-            //             range,
-            //             // getRemoteSchema,
-            //         ),
-            //     };
-            // }
-            // else{
-            //     console.log('不匹配');
-            // }
-            //提示可用函数
+            //提示可用函数或变量
             return {
-                suggestions: createFunctionDependencyProposals(functionNames, range),
+                suggestions: createFunctionDependencyProposals(schemaMapModel.localVariable, functionNames, range),
             };
         }
     })
@@ -194,10 +178,9 @@ export function setupLanguage() {
             return client.getLanguageServiceWorker(...uris);
         };
         //Call the errors provider
-        new DiagnosticsAdapter(worker);
+        new DiagnosticsAdapter(worker, schemaMapModel, formulaRtType, onChange);
         // monaco.languages.registerDocumentFormattingEditProvider(languageID, new TodoLangFormattingProvider(worker));
     });
-
 }
 
 export type WorkerAccessor = (...uris: monaco.Uri[]) => Promise<TbexpLangWorker>;

@@ -6,8 +6,22 @@ export const ArugumentErrorCode = {
   FUNCTION_NULL: 'BASIC0005',
 } as const;
 
+export const GetArugumentErrorCodeMsg = (code) => {
+  const map = new Map([
+    ['BASIC0001', '参数数量错误'],
+    ['BASIC0002', '参数类型错误'],
+    ['BASIC0003', '参数不为空'],
+    ['BASIC0004', '返回类型错误'],
+    ['BASIC0005', '函数暂未实现'],
+    ['BASIC9999', '未知错误']
+  ]);
+  if (map.has(code)) {
+    return map.get(code);
+  }
+  return '未知错误';
+}
+
 export class ArgumentErrorModel {
-  protected map: Map<string, string>;
   public code: string = '';
   public msg: string | undefined = '';
   public detail: string = '';
@@ -16,20 +30,7 @@ export class ArgumentErrorModel {
     this.code = code;
     this.detail = detail;
     this.idx = index;
-    this.map = new Map([
-      ['BASIC0001', '参数数量错误'],
-      ['BASIC0002', '参数类型错误'],
-      ['BASIC0003', '参数为空'],
-      ['BASIC0004', '返回类型错误'],
-      ['BASIC0005', '函数暂未实现'],
-      ['BASIC9999', '未知错误']
-    ]);
-    if (this.map.has(code)) {
-      this.msg = this.map.get(code);
-    } else {
-      this.code = 'BASIC9999';
-      this.msg = this.map.get(code);
-    }
+    this.msg = GetArugumentErrorCodeMsg(code);
   }
 }
 

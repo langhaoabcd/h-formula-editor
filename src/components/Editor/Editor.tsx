@@ -1,54 +1,58 @@
 import * as React from 'react';
 import * as monaco from 'monaco-editor-core';
-import { IFieldMeta } from '@toy-box/meta-schema';
-// import { SchemaMapWraper } from '../../language-service/schemaMap.data';
+import { ContextResource } from '../../language-service/schemaMap.data';
+import { setupLanguage } from '../../tbexp-lang/setup';
+import { IFieldMeta, MetaValueType } from '@toy-box/meta-schema';
+import { languageID } from '../../tbexp-lang/config';
 
 interface IEditorPorps {
-  language: string;
+  flowAllResource: {
+    globalVariables: Record<string, IFieldMeta>;
+    localVariables: Record<string, IFieldMeta>;
+  };
+  formulaText: string;
+  formulaType: MetaValueType | undefined;
+  onChange:any
 }
+
 let edt: any;
 const Editor: React.FC<IEditorPorps> = (props: IEditorPorps) => {
+  let contextResource = new ContextResource();
+  contextResource.localVariable = props.flowAllResource.localVariables;
+  contextResource.globalVariables = props.flowAllResource.globalVariables;
+
+  setupLanguage(contextResource, props.formulaType,props.onChange);
+
   let divNode;
   const assignRef = React.useCallback((node) => {
     // On mount get the ref of the div and assign it the divNode
     divNode = node;
   }, []);
 
-  const initSchemaMap=() =>{
-    // SchemaMapWraper.getInstance().setSchemaMap(schemaMap);//todo store redux
-  }
   const setValue = () => {
-    edt.setValue('COUNT(1,2,3)');
+    edt.setValue('1+2+SUM(1)');
   };
-  const getValue = () => {
-    alert(edt.getValue());
-  };
-  const getReturnType=()=>{
-    alert('');//todo 获取redux?
-  }
 
   React.useEffect(() => {
     if (divNode) {
       const editor = monaco.editor.create(divNode, {
-        language: props.language,
+        language: languageID,
         minimap: { enabled: false },
         autoIndent: true,
         fontSize: 20,
       });
       edt = editor;
     }
+
+    if (props.formulaText != '') {
+      edt.setValue(props.formulaText);
+    }
   }, [assignRef]);
 
   return (
     <div>
       <div>
-        <button disabled onClick={initSchemaMap}>
-          initSchemaMap
-        </button>
         <button onClick={setValue}>set value</button>
-        <button onClick={getValue}>get value</button>
-        <button onClick={getReturnType}>get returnType</button>
-        {/* <span> 约定：全局变量$variable; 局部变量!variable</span> */}
       </div>
       <div ref={assignRef} style={{ height: '90vh' }}></div>
     </div>

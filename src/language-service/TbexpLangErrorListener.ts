@@ -1,6 +1,9 @@
 import { ANTLRErrorListener, RecognitionException, Recognizer } from "antlr4ts";
 
-
+export interface ITbexpLangErrorAndCode{
+    errors: ITbexpLangError[],
+    text:string
+}
 export interface ITbexpLangError {
     startLineNumber: number;
     startColumn: number;

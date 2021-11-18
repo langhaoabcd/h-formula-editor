@@ -6,17 +6,20 @@ import { ParseTreeListener } from "antlr4ts/tree/ParseTreeListener";
 import { DecimalLiteralExpressionContext } from "./FormulaParser";
 import { StringLiteralExpressionContext } from "./FormulaParser";
 import { BooleanLiteralExpressionContext } from "./FormulaParser";
+import { FunctionExpressionContext } from "./FormulaParser";
 import { VariableExpressionContext } from "./FormulaParser";
 import { ParenthesizedExpressionContext } from "./FormulaParser";
 import { MultiplicativeExpressionContext } from "./FormulaParser";
 import { AdditiveExpressionContext } from "./FormulaParser";
 import { CompareExpressionContext } from "./FormulaParser";
-import { FunctionExpressionContext } from "./FormulaParser";
 import { StatContext } from "./FormulaParser";
 import { ArgumentsContext } from "./FormulaParser";
 import { ArgumentListContext } from "./FormulaParser";
 import { ArgumentContext } from "./FormulaParser";
 import { VariableContext } from "./FormulaParser";
+import { DecimalLiteralContext } from "./FormulaParser";
+import { StringLiteralContext } from "./FormulaParser";
+import { BooleanLiteralContext } from "./FormulaParser";
 import { FunctionContext } from "./FormulaParser";
 import { SingleExpressionContext } from "./FormulaParser";
 
@@ -64,6 +67,19 @@ export interface FormulaParserListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	exitBooleanLiteralExpression?: (ctx: BooleanLiteralExpressionContext) => void;
+
+	/**
+	 * Enter a parse tree produced by the `FunctionExpression`
+	 * labeled alternative in `FormulaParser.singleExpression`.
+	 * @param ctx the parse tree
+	 */
+	enterFunctionExpression?: (ctx: FunctionExpressionContext) => void;
+	/**
+	 * Exit a parse tree produced by the `FunctionExpression`
+	 * labeled alternative in `FormulaParser.singleExpression`.
+	 * @param ctx the parse tree
+	 */
+	exitFunctionExpression?: (ctx: FunctionExpressionContext) => void;
 
 	/**
 	 * Enter a parse tree produced by the `VariableExpression`
@@ -131,19 +147,6 @@ export interface FormulaParserListener extends ParseTreeListener {
 	exitCompareExpression?: (ctx: CompareExpressionContext) => void;
 
 	/**
-	 * Enter a parse tree produced by the `FunctionExpression`
-	 * labeled alternative in `FormulaParser.singleExpression`.
-	 * @param ctx the parse tree
-	 */
-	enterFunctionExpression?: (ctx: FunctionExpressionContext) => void;
-	/**
-	 * Exit a parse tree produced by the `FunctionExpression`
-	 * labeled alternative in `FormulaParser.singleExpression`.
-	 * @param ctx the parse tree
-	 */
-	exitFunctionExpression?: (ctx: FunctionExpressionContext) => void;
-
-	/**
 	 * Enter a parse tree produced by `FormulaParser.stat`.
 	 * @param ctx the parse tree
 	 */
@@ -197,6 +200,39 @@ export interface FormulaParserListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	exitVariable?: (ctx: VariableContext) => void;
+
+	/**
+	 * Enter a parse tree produced by `FormulaParser.decimalLiteral`.
+	 * @param ctx the parse tree
+	 */
+	enterDecimalLiteral?: (ctx: DecimalLiteralContext) => void;
+	/**
+	 * Exit a parse tree produced by `FormulaParser.decimalLiteral`.
+	 * @param ctx the parse tree
+	 */
+	exitDecimalLiteral?: (ctx: DecimalLiteralContext) => void;
+
+	/**
+	 * Enter a parse tree produced by `FormulaParser.stringLiteral`.
+	 * @param ctx the parse tree
+	 */
+	enterStringLiteral?: (ctx: StringLiteralContext) => void;
+	/**
+	 * Exit a parse tree produced by `FormulaParser.stringLiteral`.
+	 * @param ctx the parse tree
+	 */
+	exitStringLiteral?: (ctx: StringLiteralContext) => void;
+
+	/**
+	 * Enter a parse tree produced by `FormulaParser.booleanLiteral`.
+	 * @param ctx the parse tree
+	 */
+	enterBooleanLiteral?: (ctx: BooleanLiteralContext) => void;
+	/**
+	 * Exit a parse tree produced by `FormulaParser.booleanLiteral`.
+	 * @param ctx the parse tree
+	 */
+	exitBooleanLiteral?: (ctx: BooleanLiteralContext) => void;
 
 	/**
 	 * Enter a parse tree produced by `FormulaParser.function`.

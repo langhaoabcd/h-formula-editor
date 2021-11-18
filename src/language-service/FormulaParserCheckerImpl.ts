@@ -1,27 +1,32 @@
 import { ParserRuleContext } from "antlr4ts";
 import { ErrorNode } from "antlr4ts/tree/ErrorNode";
 import { TerminalNode } from "antlr4ts/tree/TerminalNode";
-import { DecimalLiteralExpressionContext, StringLiteralExpressionContext, BooleanLiteralExpressionContext, VariableExpressionContext, ParenthesizedExpressionContext, MultiplicativeExpressionContext, AdditiveExpressionContext, CompareExpressionContext, FunctionExpressionContext, StatContext, ArgumentsContext, ArgumentListContext, ArgumentContext, VariableContext, FunctionContext, SingleExpressionContext } from "../ANTLR/FormulaParser";
+import { DecimalLiteralExpressionContext, StringLiteralExpressionContext, BooleanLiteralExpressionContext, VariableExpressionContext, MultiplicativeExpressionContext, AdditiveExpressionContext, CompareExpressionContext, FunctionExpressionContext, StatContext, ArgumentsContext, ArgumentListContext, ArgumentContext, VariableContext, FunctionContext, SingleExpressionContext, ParenthesizedExpressionContext } from "../ANTLR/FormulaParser";
 import { ParseType } from "./type";
-import { DataType } from "../formulaType/DataType";
+import { DataType, fromMetaType } from "../formulaType/DataType";
 import { ArgumentItem, FormulaParserChecker } from "./FormulaParserChecker";
 import { TYPE } from "../formulaType/types";
 import { formulaType } from "../formulaType";
 import { ITbexpLangError } from "./TbexpLangErrorListener";
-import { ArgumentErrorModel, ValidateException, ArugumentErrorCode, } from "./exception/ValidateException";
-import { getVariableType } from "./schemaMap.data";
+import { ArgumentErrorModel, ValidateException, ArugumentErrorCode, GetArugumentErrorCodeMsg, } from "./exception/ValidateException";
+import { getVariableType, ContextResource } from "./schemaMap.data";
+import { MetaValueType } from "@toy-box/meta-schema";
+// import { getVariableType } from "./schemaMap.data";
 
 export type FieldTypeGet = (pattern: string) => DataType;
-
 export class FormulaParserCheckerImpl implements FormulaParserChecker {
   private parseException?: ParserException;
   private parserMap = new WeakMap();
   private getFieldType: FieldTypeGet;
   private parseType: ParseType;
   private errors: ITbexpLangError[];
+  private schemaMapModel: ContextResource
+  private formulaRtType: MetaValueType
 
-  constructor(getFieldType: FieldTypeGet) {
+  constructor(getFieldType: FieldTypeGet, schemaMapModel: ContextResource, returnType: MetaValueType) {
     this.getFieldType = getFieldType;
+    this.schemaMapModel = schemaMapModel;
+    this.formulaRtType = returnType;
     this.parseType = {
       success: false,
       result: new DataType(TYPE.UNKNOW),
@@ -69,7 +74,7 @@ export class FormulaParserCheckerImpl implements FormulaParserChecker {
   exitVariableExpression(ctx: VariableExpressionContext) {
     const text = ctx.variable().FieldLiteral().text;
     // const dtype = this.getFieldType(text);//注入的方式
-    const dtype = getVariableType(text, text.indexOf('$') > -1 ? 0 : 1);
+    const dtype = getVariableType(this.schemaMapModel, text, text.indexOf('$') > -1 ? 0 : 1);
     this.parserMap.set(
       ctx,
       new ArgumentItem(dtype, ctx),
@@ -118,12 +123,12 @@ export class FormulaParserCheckerImpl implements FormulaParserChecker {
           this.parserMap.set(ctx, new ArgumentItem(new DataType(TYPE.UNKNOW), ctx));
           err.getErrors().forEach((x, i) => {
             //如果函数参数为空的时候
-            if (x.code == ArugumentErrorCode.PARAM_NULL) {
+            if (x.code == ArugumentErrorCode.PARAM_NULL || x.code == ArugumentErrorCode.PARAM_COUNT) {
               this.errors.push({
                 code: x.code,
                 endColumn: ctx.stop.stopIndex + 2,
                 endLineNumber: ctx.stop.line,
-                message: `${ctx.text},参数不为空`,
+                message: `${GetArugumentErrorCodeMsg(x.code)}`,
                 startColumn: ctx.stop.charPositionInLine + 1,
                 startLineNumber: ctx.stop.line
               });
@@ -314,8 +319,20 @@ export class FormulaParserCheckerImpl implements FormulaParserChecker {
       this.parseType = {
         success: true,
         result: this.parserMap.get(ctx.getChild(0)).getDataType(),
-        // errors:[]
       };
+      if(!this.parseType.result.isUnknow && this.formulaRtType!=undefined){
+        let returnDataType = fromMetaType(this.formulaRtType);
+        if (JSON.stringify(returnDataType) != JSON.stringify(this.parseType.result)) {
+          this.errors.push({
+            code: ArugumentErrorCode.RETURN_TYPE,
+            endColumn: ctx.stop.stopIndex + 2,
+            endLineNumber: ctx.stop.line,
+            message: `${GetArugumentErrorCodeMsg(ArugumentErrorCode.RETURN_TYPE)}`,
+            startColumn: ctx.stop.charPositionInLine + 1,
+            startLineNumber: ctx.stop.line
+          });
+        }
+      }
     }
   }
 

@@ -42,8 +42,8 @@ export class FormulaParser extends Parser {
 	public static readonly LT = 14;
 	public static readonly LTE = 15;
 	public static readonly BooleanLiteral = 16;
-	public static readonly FieldLiteral = 17;
-	public static readonly FunctionLiteral = 18;
+	public static readonly FunctionLiteral = 17;
+	public static readonly FieldLiteral = 18;
 	public static readonly DecimalLiteral = 19;
 	public static readonly StringLiteral = 20;
 	public static readonly WhiteSpaces = 21;
@@ -52,12 +52,15 @@ export class FormulaParser extends Parser {
 	public static readonly RULE_argumentList = 2;
 	public static readonly RULE_argument = 3;
 	public static readonly RULE_variable = 4;
-	public static readonly RULE_function = 5;
-	public static readonly RULE_singleExpression = 6;
+	public static readonly RULE_decimalLiteral = 5;
+	public static readonly RULE_stringLiteral = 6;
+	public static readonly RULE_booleanLiteral = 7;
+	public static readonly RULE_function = 8;
+	public static readonly RULE_singleExpression = 9;
 	// tslint:disable:no-trailing-whitespace
 	public static readonly ruleNames: string[] = [
-		"stat", "arguments", "argumentList", "argument", "variable", "function", 
-		"singleExpression",
+		"stat", "arguments", "argumentList", "argument", "variable", "decimalLiteral", 
+		"stringLiteral", "booleanLiteral", "function", "singleExpression",
 	];
 
 	private static readonly _LITERAL_NAMES: Array<string | undefined> = [
@@ -67,7 +70,7 @@ export class FormulaParser extends Parser {
 	private static readonly _SYMBOLIC_NAMES: Array<string | undefined> = [
 		undefined, "OpenParen", "CloseParen", "OpenBrace", "CloseBrace", "Comma", 
 		"Plus", "Minus", "Multiply", "Divide", "EQ", "NE", "GT", "GTE", "LT", 
-		"LTE", "BooleanLiteral", "FieldLiteral", "FunctionLiteral", "DecimalLiteral", 
+		"LTE", "BooleanLiteral", "FunctionLiteral", "FieldLiteral", "DecimalLiteral", 
 		"StringLiteral", "WhiteSpaces",
 	];
 	public static readonly VOCABULARY: Vocabulary = new VocabularyImpl(FormulaParser._LITERAL_NAMES, FormulaParser._SYMBOLIC_NAMES, []);
@@ -103,7 +106,7 @@ export class FormulaParser extends Parser {
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 14;
+			this.state = 20;
 			this.singleExpression(0);
 			}
 		}
@@ -129,21 +132,21 @@ export class FormulaParser extends Parser {
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 16;
+			this.state = 22;
 			this.match(FormulaParser.OpenParen);
-			this.state = 21;
+			this.state = 27;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
-			if ((((_la) & ~0x1F) === 0 && ((1 << _la) & ((1 << FormulaParser.OpenParen) | (1 << FormulaParser.BooleanLiteral) | (1 << FormulaParser.FieldLiteral) | (1 << FormulaParser.FunctionLiteral) | (1 << FormulaParser.DecimalLiteral) | (1 << FormulaParser.StringLiteral))) !== 0)) {
+			if ((((_la) & ~0x1F) === 0 && ((1 << _la) & ((1 << FormulaParser.OpenParen) | (1 << FormulaParser.BooleanLiteral) | (1 << FormulaParser.FunctionLiteral) | (1 << FormulaParser.FieldLiteral) | (1 << FormulaParser.DecimalLiteral) | (1 << FormulaParser.StringLiteral))) !== 0)) {
 				{
-				this.state = 17;
+				this.state = 23;
 				this.argumentList();
-				this.state = 19;
+				this.state = 25;
 				this._errHandler.sync(this);
 				_la = this._input.LA(1);
 				if (_la === FormulaParser.Comma) {
 					{
-					this.state = 18;
+					this.state = 24;
 					this.match(FormulaParser.Comma);
 					}
 				}
@@ -151,7 +154,7 @@ export class FormulaParser extends Parser {
 				}
 			}
 
-			this.state = 23;
+			this.state = 29;
 			this.match(FormulaParser.CloseParen);
 			}
 		}
@@ -177,23 +180,23 @@ export class FormulaParser extends Parser {
 			let _alt: number;
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 25;
+			this.state = 31;
 			this.argument();
-			this.state = 30;
+			this.state = 36;
 			this._errHandler.sync(this);
 			_alt = this.interpreter.adaptivePredict(this._input, 2, this._ctx);
 			while (_alt !== 2 && _alt !== ATN.INVALID_ALT_NUMBER) {
 				if (_alt === 1) {
 					{
 					{
-					this.state = 26;
+					this.state = 32;
 					this.match(FormulaParser.Comma);
-					this.state = 27;
+					this.state = 33;
 					this.argument();
 					}
 					}
 				}
-				this.state = 32;
+				this.state = 38;
 				this._errHandler.sync(this);
 				_alt = this.interpreter.adaptivePredict(this._input, 2, this._ctx);
 			}
@@ -220,7 +223,7 @@ export class FormulaParser extends Parser {
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 33;
+			this.state = 39;
 			this.singleExpression(0);
 			}
 		}
@@ -245,8 +248,83 @@ export class FormulaParser extends Parser {
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 35;
+			this.state = 41;
 			this.match(FormulaParser.FieldLiteral);
+			}
+		}
+		catch (re) {
+			if (re instanceof RecognitionException) {
+				_localctx.exception = re;
+				this._errHandler.reportError(this, re);
+				this._errHandler.recover(this, re);
+			} else {
+				throw re;
+			}
+		}
+		finally {
+			this.exitRule();
+		}
+		return _localctx;
+	}
+	// @RuleVersion(0)
+	public decimalLiteral(): DecimalLiteralContext {
+		let _localctx: DecimalLiteralContext = new DecimalLiteralContext(this._ctx, this.state);
+		this.enterRule(_localctx, 10, FormulaParser.RULE_decimalLiteral);
+		try {
+			this.enterOuterAlt(_localctx, 1);
+			{
+			this.state = 43;
+			this.match(FormulaParser.DecimalLiteral);
+			}
+		}
+		catch (re) {
+			if (re instanceof RecognitionException) {
+				_localctx.exception = re;
+				this._errHandler.reportError(this, re);
+				this._errHandler.recover(this, re);
+			} else {
+				throw re;
+			}
+		}
+		finally {
+			this.exitRule();
+		}
+		return _localctx;
+	}
+	// @RuleVersion(0)
+	public stringLiteral(): StringLiteralContext {
+		let _localctx: StringLiteralContext = new StringLiteralContext(this._ctx, this.state);
+		this.enterRule(_localctx, 12, FormulaParser.RULE_stringLiteral);
+		try {
+			this.enterOuterAlt(_localctx, 1);
+			{
+			this.state = 45;
+			this.match(FormulaParser.StringLiteral);
+			}
+		}
+		catch (re) {
+			if (re instanceof RecognitionException) {
+				_localctx.exception = re;
+				this._errHandler.reportError(this, re);
+				this._errHandler.recover(this, re);
+			} else {
+				throw re;
+			}
+		}
+		finally {
+			this.exitRule();
+		}
+		return _localctx;
+	}
+	// @RuleVersion(0)
+	public booleanLiteral(): BooleanLiteralContext {
+		let _localctx: BooleanLiteralContext = new BooleanLiteralContext(this._ctx, this.state);
+		this.enterRule(_localctx, 14, FormulaParser.RULE_booleanLiteral);
+		try {
+			this.enterOuterAlt(_localctx, 1);
+			{
+			this.state = 47;
+			this.match(FormulaParser.BooleanLiteral);
 			}
 		}
 		catch (re) {
@@ -266,13 +344,13 @@ export class FormulaParser extends Parser {
 	// @RuleVersion(0)
 	public function(): FunctionContext {
 		let _localctx: FunctionContext = new FunctionContext(this._ctx, this.state);
-		this.enterRule(_localctx, 10, FormulaParser.RULE_function);
+		this.enterRule(_localctx, 16, FormulaParser.RULE_function);
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 37;
+			this.state = 49;
 			this.match(FormulaParser.FunctionLiteral);
-			this.state = 38;
+			this.state = 50;
 			this.arguments();
 			}
 		}
@@ -303,14 +381,14 @@ export class FormulaParser extends Parser {
 		let _parentState: number = this.state;
 		let _localctx: SingleExpressionContext = new SingleExpressionContext(this._ctx, _parentState);
 		let _prevctx: SingleExpressionContext = _localctx;
-		let _startState: number = 12;
-		this.enterRecursionRule(_localctx, 12, FormulaParser.RULE_singleExpression, _p);
+		let _startState: number = 18;
+		this.enterRecursionRule(_localctx, 18, FormulaParser.RULE_singleExpression, _p);
 		let _la: number;
 		try {
 			let _alt: number;
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 50;
+			this.state = 62;
 			this._errHandler.sync(this);
 			switch (this._input.LA(1)) {
 			case FormulaParser.DecimalLiteral:
@@ -319,8 +397,8 @@ export class FormulaParser extends Parser {
 				this._ctx = _localctx;
 				_prevctx = _localctx;
 
-				this.state = 41;
-				this.match(FormulaParser.DecimalLiteral);
+				this.state = 53;
+				this.decimalLiteral();
 				}
 				break;
 			case FormulaParser.StringLiteral:
@@ -328,8 +406,8 @@ export class FormulaParser extends Parser {
 				_localctx = new StringLiteralExpressionContext(_localctx);
 				this._ctx = _localctx;
 				_prevctx = _localctx;
-				this.state = 42;
-				this.match(FormulaParser.StringLiteral);
+				this.state = 54;
+				this.stringLiteral();
 				}
 				break;
 			case FormulaParser.BooleanLiteral:
@@ -337,8 +415,17 @@ export class FormulaParser extends Parser {
 				_localctx = new BooleanLiteralExpressionContext(_localctx);
 				this._ctx = _localctx;
 				_prevctx = _localctx;
-				this.state = 43;
-				this.match(FormulaParser.BooleanLiteral);
+				this.state = 55;
+				this.booleanLiteral();
+				}
+				break;
+			case FormulaParser.FunctionLiteral:
+				{
+				_localctx = new FunctionExpressionContext(_localctx);
+				this._ctx = _localctx;
+				_prevctx = _localctx;
+				this.state = 56;
+				this.function();
 				}
 				break;
 			case FormulaParser.FieldLiteral:
@@ -346,7 +433,7 @@ export class FormulaParser extends Parser {
 				_localctx = new VariableExpressionContext(_localctx);
 				this._ctx = _localctx;
 				_prevctx = _localctx;
-				this.state = 44;
+				this.state = 57;
 				this.variable();
 				}
 				break;
@@ -355,28 +442,19 @@ export class FormulaParser extends Parser {
 				_localctx = new ParenthesizedExpressionContext(_localctx);
 				this._ctx = _localctx;
 				_prevctx = _localctx;
-				this.state = 45;
+				this.state = 58;
 				this.match(FormulaParser.OpenParen);
-				this.state = 46;
+				this.state = 59;
 				this.singleExpression(0);
-				this.state = 47;
+				this.state = 60;
 				this.match(FormulaParser.CloseParen);
-				}
-				break;
-			case FormulaParser.FunctionLiteral:
-				{
-				_localctx = new FunctionExpressionContext(_localctx);
-				this._ctx = _localctx;
-				_prevctx = _localctx;
-				this.state = 49;
-				this.function();
 				}
 				break;
 			default:
 				throw new NoViableAltException(this);
 			}
 			this._ctx._stop = this._input.tryLT(-1);
-			this.state = 63;
+			this.state = 75;
 			this._errHandler.sync(this);
 			_alt = this.interpreter.adaptivePredict(this._input, 5, this._ctx);
 			while (_alt !== 2 && _alt !== ATN.INVALID_ALT_NUMBER) {
@@ -386,18 +464,18 @@ export class FormulaParser extends Parser {
 					}
 					_prevctx = _localctx;
 					{
-					this.state = 61;
+					this.state = 73;
 					this._errHandler.sync(this);
 					switch ( this.interpreter.adaptivePredict(this._input, 4, this._ctx) ) {
 					case 1:
 						{
 						_localctx = new MultiplicativeExpressionContext(new SingleExpressionContext(_parentctx, _parentState));
 						this.pushNewRecursionContext(_localctx, _startState, FormulaParser.RULE_singleExpression);
-						this.state = 52;
-						if (!(this.precpred(this._ctx, 4))) {
-							throw this.createFailedPredicateException("this.precpred(this._ctx, 4)");
+						this.state = 64;
+						if (!(this.precpred(this._ctx, 3))) {
+							throw this.createFailedPredicateException("this.precpred(this._ctx, 3)");
 						}
-						this.state = 53;
+						this.state = 65;
 						(_localctx as MultiplicativeExpressionContext)._op = this._input.LT(1);
 						_la = this._input.LA(1);
 						if (!(_la === FormulaParser.Multiply || _la === FormulaParser.Divide)) {
@@ -410,8 +488,8 @@ export class FormulaParser extends Parser {
 							this._errHandler.reportMatch(this);
 							this.consume();
 						}
-						this.state = 54;
-						this.singleExpression(5);
+						this.state = 66;
+						this.singleExpression(4);
 						}
 						break;
 
@@ -419,11 +497,11 @@ export class FormulaParser extends Parser {
 						{
 						_localctx = new AdditiveExpressionContext(new SingleExpressionContext(_parentctx, _parentState));
 						this.pushNewRecursionContext(_localctx, _startState, FormulaParser.RULE_singleExpression);
-						this.state = 55;
-						if (!(this.precpred(this._ctx, 3))) {
-							throw this.createFailedPredicateException("this.precpred(this._ctx, 3)");
+						this.state = 67;
+						if (!(this.precpred(this._ctx, 2))) {
+							throw this.createFailedPredicateException("this.precpred(this._ctx, 2)");
 						}
-						this.state = 56;
+						this.state = 68;
 						(_localctx as AdditiveExpressionContext)._op = this._input.LT(1);
 						_la = this._input.LA(1);
 						if (!(_la === FormulaParser.Plus || _la === FormulaParser.Minus)) {
@@ -436,8 +514,8 @@ export class FormulaParser extends Parser {
 							this._errHandler.reportMatch(this);
 							this.consume();
 						}
-						this.state = 57;
-						this.singleExpression(4);
+						this.state = 69;
+						this.singleExpression(3);
 						}
 						break;
 
@@ -445,11 +523,11 @@ export class FormulaParser extends Parser {
 						{
 						_localctx = new CompareExpressionContext(new SingleExpressionContext(_parentctx, _parentState));
 						this.pushNewRecursionContext(_localctx, _startState, FormulaParser.RULE_singleExpression);
-						this.state = 58;
-						if (!(this.precpred(this._ctx, 2))) {
-							throw this.createFailedPredicateException("this.precpred(this._ctx, 2)");
+						this.state = 70;
+						if (!(this.precpred(this._ctx, 1))) {
+							throw this.createFailedPredicateException("this.precpred(this._ctx, 1)");
 						}
-						this.state = 59;
+						this.state = 71;
 						(_localctx as CompareExpressionContext)._cmp = this._input.LT(1);
 						_la = this._input.LA(1);
 						if (!((((_la) & ~0x1F) === 0 && ((1 << _la) & ((1 << FormulaParser.EQ) | (1 << FormulaParser.NE) | (1 << FormulaParser.GT) | (1 << FormulaParser.GTE) | (1 << FormulaParser.LT) | (1 << FormulaParser.LTE))) !== 0))) {
@@ -462,14 +540,14 @@ export class FormulaParser extends Parser {
 							this._errHandler.reportMatch(this);
 							this.consume();
 						}
-						this.state = 60;
-						this.singleExpression(3);
+						this.state = 72;
+						this.singleExpression(2);
 						}
 						break;
 					}
 					}
 				}
-				this.state = 65;
+				this.state = 77;
 				this._errHandler.sync(this);
 				_alt = this.interpreter.adaptivePredict(this._input, 5, this._ctx);
 			}
@@ -492,7 +570,7 @@ export class FormulaParser extends Parser {
 
 	public sempred(_localctx: RuleContext, ruleIndex: number, predIndex: number): boolean {
 		switch (ruleIndex) {
-		case 6:
+		case 9:
 			return this.singleExpression_sempred(_localctx as SingleExpressionContext, predIndex);
 		}
 		return true;
@@ -500,47 +578,50 @@ export class FormulaParser extends Parser {
 	private singleExpression_sempred(_localctx: SingleExpressionContext, predIndex: number): boolean {
 		switch (predIndex) {
 		case 0:
-			return this.precpred(this._ctx, 4);
-
-		case 1:
 			return this.precpred(this._ctx, 3);
 
-		case 2:
+		case 1:
 			return this.precpred(this._ctx, 2);
+
+		case 2:
+			return this.precpred(this._ctx, 1);
 		}
 		return true;
 	}
 
 	public static readonly _serializedATN: string =
-		"\x03\uC91D\uCABA\u058D\uAFBA\u4F53\u0607\uEA8B\uC241\x03\x17E\x04\x02" +
+		"\x03\uC91D\uCABA\u058D\uAFBA\u4F53\u0607\uEA8B\uC241\x03\x17Q\x04\x02" +
 		"\t\x02\x04\x03\t\x03\x04\x04\t\x04\x04\x05\t\x05\x04\x06\t\x06\x04\x07" +
-		"\t\x07\x04\b\t\b\x03\x02\x03\x02\x03\x03\x03\x03\x03\x03\x05\x03\x16\n" +
-		"\x03\x05\x03\x18\n\x03\x03\x03\x03\x03\x03\x04\x03\x04\x03\x04\x07\x04" +
-		"\x1F\n\x04\f\x04\x0E\x04\"\v\x04\x03\x05\x03\x05\x03\x06\x03\x06\x03\x07" +
-		"\x03\x07\x03\x07\x03\b\x03\b\x03\b\x03\b\x03\b\x03\b\x03\b\x03\b\x03\b" +
-		"\x03\b\x05\b5\n\b\x03\b\x03\b\x03\b\x03\b\x03\b\x03\b\x03\b\x03\b\x03" +
-		"\b\x07\b@\n\b\f\b\x0E\bC\v\b\x03\b\x02\x02\x03\x0E\t\x02\x02\x04\x02\x06" +
-		"\x02\b\x02\n\x02\f\x02\x0E\x02\x02\x05\x03\x02\n\v\x03\x02\b\t\x03\x02" +
-		"\f\x11\x02H\x02\x10\x03\x02\x02\x02\x04\x12\x03\x02\x02\x02\x06\x1B\x03" +
-		"\x02\x02\x02\b#\x03\x02\x02\x02\n%\x03\x02\x02\x02\f\'\x03\x02\x02\x02" +
-		"\x0E4\x03\x02\x02\x02\x10\x11\x05\x0E\b\x02\x11\x03\x03\x02\x02\x02\x12" +
-		"\x17\x07\x03\x02\x02\x13\x15\x05\x06\x04\x02\x14\x16\x07\x07\x02\x02\x15" +
-		"\x14\x03\x02\x02\x02\x15\x16\x03\x02\x02\x02\x16\x18\x03\x02\x02\x02\x17" +
-		"\x13\x03\x02\x02\x02\x17\x18\x03\x02\x02\x02\x18\x19\x03\x02\x02\x02\x19" +
-		"\x1A\x07\x04\x02\x02\x1A\x05\x03\x02\x02\x02\x1B \x05\b\x05\x02\x1C\x1D" +
-		"\x07\x07\x02\x02\x1D\x1F\x05\b\x05\x02\x1E\x1C\x03\x02\x02\x02\x1F\"\x03" +
-		"\x02\x02\x02 \x1E\x03\x02\x02\x02 !\x03\x02\x02\x02!\x07\x03\x02\x02\x02" +
-		"\" \x03\x02\x02\x02#$\x05\x0E\b\x02$\t\x03\x02\x02\x02%&\x07\x13\x02\x02" +
-		"&\v\x03\x02\x02\x02\'(\x07\x14\x02\x02()\x05\x04\x03\x02)\r\x03\x02\x02" +
-		"\x02*+\b\b\x01\x02+5\x07\x15\x02\x02,5\x07\x16\x02\x02-5\x07\x12\x02\x02" +
-		".5\x05\n\x06\x02/0\x07\x03\x02\x0201\x05\x0E\b\x0212\x07\x04\x02\x022" +
-		"5\x03\x02\x02\x0235\x05\f\x07\x024*\x03\x02\x02\x024,\x03\x02\x02\x02" +
-		"4-\x03\x02\x02\x024.\x03\x02\x02\x024/\x03\x02\x02\x0243\x03\x02\x02\x02" +
-		"5A\x03\x02\x02\x0267\f\x06\x02\x0278\t\x02\x02\x028@\x05\x0E\b\x079:\f" +
-		"\x05\x02\x02:;\t\x03\x02\x02;@\x05\x0E\b\x06<=\f\x04\x02\x02=>\t\x04\x02" +
-		"\x02>@\x05\x0E\b\x05?6\x03\x02\x02\x02?9\x03\x02\x02\x02?<\x03\x02\x02" +
-		"\x02@C\x03\x02\x02\x02A?\x03\x02\x02\x02AB\x03\x02\x02\x02B\x0F\x03\x02" +
-		"\x02\x02CA\x03\x02\x02\x02\b\x15\x17 4?A";
+		"\t\x07\x04\b\t\b\x04\t\t\t\x04\n\t\n\x04\v\t\v\x03\x02\x03\x02\x03\x03" +
+		"\x03\x03\x03\x03\x05\x03\x1C\n\x03\x05\x03\x1E\n\x03\x03\x03\x03\x03\x03" +
+		"\x04\x03\x04\x03\x04\x07\x04%\n\x04\f\x04\x0E\x04(\v\x04\x03\x05\x03\x05" +
+		"\x03\x06\x03\x06\x03\x07\x03\x07\x03\b\x03\b\x03\t\x03\t\x03\n\x03\n\x03" +
+		"\n\x03\v\x03\v\x03\v\x03\v\x03\v\x03\v\x03\v\x03\v\x03\v\x03\v\x05\vA" +
+		"\n\v\x03\v\x03\v\x03\v\x03\v\x03\v\x03\v\x03\v\x03\v\x03\v\x07\vL\n\v" +
+		"\f\v\x0E\vO\v\v\x03\v\x02\x02\x03\x14\f\x02\x02\x04\x02\x06\x02\b\x02" +
+		"\n\x02\f\x02\x0E\x02\x10\x02\x12\x02\x14\x02\x02\x05\x03\x02\n\v\x03\x02" +
+		"\b\t\x03\x02\f\x11\x02Q\x02\x16\x03\x02\x02\x02\x04\x18\x03\x02\x02\x02" +
+		"\x06!\x03\x02\x02\x02\b)\x03\x02\x02\x02\n+\x03\x02\x02\x02\f-\x03\x02" +
+		"\x02\x02\x0E/\x03\x02\x02\x02\x101\x03\x02\x02\x02\x123\x03\x02\x02\x02" +
+		"\x14@\x03\x02\x02\x02\x16\x17\x05\x14\v\x02\x17\x03\x03\x02\x02\x02\x18" +
+		"\x1D\x07\x03\x02\x02\x19\x1B\x05\x06\x04\x02\x1A\x1C\x07\x07\x02\x02\x1B" +
+		"\x1A\x03\x02\x02\x02\x1B\x1C\x03\x02\x02\x02\x1C\x1E\x03\x02\x02\x02\x1D" +
+		"\x19\x03\x02\x02\x02\x1D\x1E\x03\x02\x02\x02\x1E\x1F\x03\x02\x02\x02\x1F" +
+		" \x07\x04\x02\x02 \x05\x03\x02\x02\x02!&\x05\b\x05\x02\"#\x07\x07\x02" +
+		"\x02#%\x05\b\x05\x02$\"\x03\x02\x02\x02%(\x03\x02\x02\x02&$\x03\x02\x02" +
+		"\x02&\'\x03\x02\x02\x02\'\x07\x03\x02\x02\x02(&\x03\x02\x02\x02)*\x05" +
+		"\x14\v\x02*\t\x03\x02\x02\x02+,\x07\x14\x02\x02,\v\x03\x02\x02\x02-.\x07" +
+		"\x15\x02\x02.\r\x03\x02\x02\x02/0\x07\x16\x02\x020\x0F\x03\x02\x02\x02" +
+		"12\x07\x12\x02\x022\x11\x03\x02\x02\x0234\x07\x13\x02\x0245\x05\x04\x03" +
+		"\x025\x13\x03\x02\x02\x0267\b\v\x01\x027A\x05\f\x07\x028A\x05\x0E\b\x02" +
+		"9A\x05\x10\t\x02:A\x05\x12\n\x02;A\x05\n\x06\x02<=\x07\x03\x02\x02=>\x05" +
+		"\x14\v\x02>?\x07\x04\x02\x02?A\x03\x02\x02\x02@6\x03\x02\x02\x02@8\x03" +
+		"\x02\x02\x02@9\x03\x02\x02\x02@:\x03\x02\x02\x02@;\x03\x02\x02\x02@<\x03" +
+		"\x02\x02\x02AM\x03\x02\x02\x02BC\f\x05\x02\x02CD\t\x02\x02\x02DL\x05\x14" +
+		"\v\x06EF\f\x04\x02\x02FG\t\x03\x02\x02GL\x05\x14\v\x05HI\f\x03\x02\x02" +
+		"IJ\t\x04\x02\x02JL\x05\x14\v\x04KB\x03\x02\x02\x02KE\x03\x02\x02\x02K" +
+		"H\x03\x02\x02\x02LO\x03\x02\x02\x02MK\x03\x02\x02\x02MN\x03\x02\x02\x02" +
+		"N\x15\x03\x02\x02\x02OM\x03\x02\x02\x02\b\x1B\x1D&@KM";
 	public static __ATN: ATN;
 	public static get _ATN(): ATN {
 		if (!FormulaParser.__ATN) {
@@ -688,6 +769,72 @@ export class VariableContext extends ParserRuleContext {
 }
 
 
+export class DecimalLiteralContext extends ParserRuleContext {
+	public DecimalLiteral(): TerminalNode { return this.getToken(FormulaParser.DecimalLiteral, 0); }
+	constructor(parent: ParserRuleContext | undefined, invokingState: number) {
+		super(parent, invokingState);
+	}
+	// @Override
+	public get ruleIndex(): number { return FormulaParser.RULE_decimalLiteral; }
+	// @Override
+	public enterRule(listener: FormulaParserListener): void {
+		if (listener.enterDecimalLiteral) {
+			listener.enterDecimalLiteral(this);
+		}
+	}
+	// @Override
+	public exitRule(listener: FormulaParserListener): void {
+		if (listener.exitDecimalLiteral) {
+			listener.exitDecimalLiteral(this);
+		}
+	}
+}
+
+
+export class StringLiteralContext extends ParserRuleContext {
+	public StringLiteral(): TerminalNode { return this.getToken(FormulaParser.StringLiteral, 0); }
+	constructor(parent: ParserRuleContext | undefined, invokingState: number) {
+		super(parent, invokingState);
+	}
+	// @Override
+	public get ruleIndex(): number { return FormulaParser.RULE_stringLiteral; }
+	// @Override
+	public enterRule(listener: FormulaParserListener): void {
+		if (listener.enterStringLiteral) {
+			listener.enterStringLiteral(this);
+		}
+	}
+	// @Override
+	public exitRule(listener: FormulaParserListener): void {
+		if (listener.exitStringLiteral) {
+			listener.exitStringLiteral(this);
+		}
+	}
+}
+
+
+export class BooleanLiteralContext extends ParserRuleContext {
+	public BooleanLiteral(): TerminalNode { return this.getToken(FormulaParser.BooleanLiteral, 0); }
+	constructor(parent: ParserRuleContext | undefined, invokingState: number) {
+		super(parent, invokingState);
+	}
+	// @Override
+	public get ruleIndex(): number { return FormulaParser.RULE_booleanLiteral; }
+	// @Override
+	public enterRule(listener: FormulaParserListener): void {
+		if (listener.enterBooleanLiteral) {
+			listener.enterBooleanLiteral(this);
+		}
+	}
+	// @Override
+	public exitRule(listener: FormulaParserListener): void {
+		if (listener.exitBooleanLiteral) {
+			listener.exitBooleanLiteral(this);
+		}
+	}
+}
+
+
 export class FunctionContext extends ParserRuleContext {
 	public FunctionLiteral(): TerminalNode { return this.getToken(FormulaParser.FunctionLiteral, 0); }
 	public arguments(): ArgumentsContext {
@@ -724,7 +871,9 @@ export class SingleExpressionContext extends ParserRuleContext {
 	}
 }
 export class DecimalLiteralExpressionContext extends SingleExpressionContext {
-	public DecimalLiteral(): TerminalNode { return this.getToken(FormulaParser.DecimalLiteral, 0); }
+	public decimalLiteral(): DecimalLiteralContext {
+		return this.getRuleContext(0, DecimalLiteralContext);
+	}
 	constructor(ctx: SingleExpressionContext) {
 		super(ctx.parent, ctx.invokingState);
 		this.copyFrom(ctx);
@@ -743,7 +892,9 @@ export class DecimalLiteralExpressionContext extends SingleExpressionContext {
 	}
 }
 export class StringLiteralExpressionContext extends SingleExpressionContext {
-	public StringLiteral(): TerminalNode { return this.getToken(FormulaParser.StringLiteral, 0); }
+	public stringLiteral(): StringLiteralContext {
+		return this.getRuleContext(0, StringLiteralContext);
+	}
 	constructor(ctx: SingleExpressionContext) {
 		super(ctx.parent, ctx.invokingState);
 		this.copyFrom(ctx);
@@ -762,7 +913,9 @@ export class StringLiteralExpressionContext extends SingleExpressionContext {
 	}
 }
 export class BooleanLiteralExpressionContext extends SingleExpressionContext {
-	public BooleanLiteral(): TerminalNode { return this.getToken(FormulaParser.BooleanLiteral, 0); }
+	public booleanLiteral(): BooleanLiteralContext {
+		return this.getRuleContext(0, BooleanLiteralContext);
+	}
 	constructor(ctx: SingleExpressionContext) {
 		super(ctx.parent, ctx.invokingState);
 		this.copyFrom(ctx);
@@ -777,6 +930,27 @@ export class BooleanLiteralExpressionContext extends SingleExpressionContext {
 	public exitRule(listener: FormulaParserListener): void {
 		if (listener.exitBooleanLiteralExpression) {
 			listener.exitBooleanLiteralExpression(this);
+		}
+	}
+}
+export class FunctionExpressionContext extends SingleExpressionContext {
+	public function(): FunctionContext {
+		return this.getRuleContext(0, FunctionContext);
+	}
+	constructor(ctx: SingleExpressionContext) {
+		super(ctx.parent, ctx.invokingState);
+		this.copyFrom(ctx);
+	}
+	// @Override
+	public enterRule(listener: FormulaParserListener): void {
+		if (listener.enterFunctionExpression) {
+			listener.enterFunctionExpression(this);
+		}
+	}
+	// @Override
+	public exitRule(listener: FormulaParserListener): void {
+		if (listener.exitFunctionExpression) {
+			listener.exitFunctionExpression(this);
 		}
 	}
 }
@@ -915,27 +1089,6 @@ export class CompareExpressionContext extends SingleExpressionContext {
 	public exitRule(listener: FormulaParserListener): void {
 		if (listener.exitCompareExpression) {
 			listener.exitCompareExpression(this);
-		}
-	}
-}
-export class FunctionExpressionContext extends SingleExpressionContext {
-	public function(): FunctionContext {
-		return this.getRuleContext(0, FunctionContext);
-	}
-	constructor(ctx: SingleExpressionContext) {
-		super(ctx.parent, ctx.invokingState);
-		this.copyFrom(ctx);
-	}
-	// @Override
-	public enterRule(listener: FormulaParserListener): void {
-		if (listener.enterFunctionExpression) {
-			listener.enterFunctionExpression(this);
-		}
-	}
-	// @Override
-	public exitRule(listener: FormulaParserListener): void {
-		if (listener.exitFunctionExpression) {
-			listener.exitFunctionExpression(this);
 		}
 	}
 }

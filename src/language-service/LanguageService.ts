@@ -2,23 +2,23 @@ import { MetaValueType } from "@toy-box/meta-schema";
 import { StatContext, VariableContext } from "../ANTLR/FormulaParser";
 import { DataType, fromMetaType, TYPE } from "../formulaType";
 import { parseAndGetSyntaxErrors } from "./Parser";
-import { getTypeHook } from "./schemaMap.data";
+import { getTypeHook, ContextResource } from "./schemaMap.data";
 import { ITbexpLangError } from "./TbexpLangErrorListener";
 
 export default class TbexpLangLanguageService {
-    validate(code: string): ITbexpLangError[] {
+    validate(code: string, schemaMapModel: ContextResource, formulaRtType: MetaValueType): ITbexpLangError[] {
         let syntaxErrors: ITbexpLangError[] = [];
         if (code) {
             //验证语法格式，参数类型，返回类型
-            syntaxErrors = parseAndGetSyntaxErrors(code, getTypeHook);
+            syntaxErrors = parseAndGetSyntaxErrors(code, getTypeHook, schemaMapModel, formulaRtType);
             console.log('syntaxErrors', syntaxErrors);
         }
         return syntaxErrors;
     }
-    format(code: string): string {
+    format(code: string, schemaMapModel: ContextResource, formulaRtType: MetaValueType): string {
         // if the code contains errors, no need to format, because this way of formating the code, will remove some of the code
         // to make things simple, we only allow formatting a valide code
-        if (this.validate(code).length > 0)
+        if (this.validate(code, schemaMapModel, formulaRtType).length > 0)
             return code;
         let formattedCode = "";
         const ast: StatContext = parseAndGetASTRoot(code);
@@ -37,10 +37,10 @@ export default class TbexpLangLanguageService {
     }
 }
 
-
 function parseAndGetASTRoot(code: string): StatContext {
     throw new Error("Function not implemented.");
 }
+
 function checkSemanticRules(ast: StatContext): ITbexpLangError[] {
     const errors: ITbexpLangError[] = [];
     const definedTodos: string[] = [];

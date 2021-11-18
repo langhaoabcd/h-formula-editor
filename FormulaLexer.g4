@@ -24,9 +24,6 @@ LTE: '<=';
 /// Boolean Literals
 BooleanLiteral: 'true' | 'false';
 
-/// Field Literals
-FieldLiteral: Field;
-
 /// Function Literals
 FunctionLiteral:
 	'DATE' //日期函数开始
@@ -93,6 +90,9 @@ FunctionLiteral:
 	| 'ISBLANK'
 	| 'INCLUDES';
 
+/// Field Literals
+FieldLiteral: Field;
+
 /// Numeric Literals
 DecimalLiteral:
 	DecimalIntegerLiteral '.' [0-9]*
@@ -149,17 +149,18 @@ fragment LineContinuation: '\\' [\r\n\u2028\u2029];
 fragment HexDigit: [0-9a-fA-F];
 
 fragment DecimalIntegerLiteral: '0' | '-'? [0-9] [0-9]*;
-
+//'!'
 fragment Field:
-	'!' FieldPathSegment FieldPathSubSegment*
-	| '!' FieldPathSegment '[' DecimalIntegerLiteral ']' FieldPathSubSegment*
+	FieldPathSegment FieldPathSubSegment*
+	| FieldPathSegment '[' DecimalIntegerLiteral ']' FieldPathSubSegment*
 	| '$' FieldPathSegment FieldPathSubSegment*
 	| '$' FieldPathSegment '[' DecimalIntegerLiteral ']' FieldPathSubSegment*;
 //'{!' FieldPathSegment FieldPathSubSegment* '}' | '{!$' FieldPathSegment FieldPathSubSegment* '}';
 
 fragment FieldPath: FieldPathSegment FieldPathSubSegment*;
 
-fragment FieldPathSegment: [a-zA-Z][a-zA-Z0-9_]*;
+fragment FieldPathSegment:
+	[a-zA-Z_][a-zA-Z0-9_]*; //[\\[.]; // [a-zA-Z_][a-zA-Z0-9_]*;
 
 fragment FieldPathSubSegment:
 	'.' FieldPathSegment
