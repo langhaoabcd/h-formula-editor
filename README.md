@@ -9,8 +9,8 @@ Check out my articles:
 
 
 # 特殊函数
-IF 和 SWITCH 返回类型UNKNOW
-TODAY 和 NOW 没有入参
+IF 和 SWITCH 返回类型UNKNOW  
+TODAY 和 NOW 没有入参  
 
 # Formula
 ## 1.BaseMath
@@ -19,8 +19,6 @@ TODAY 和 NOW 没有入参
 current.id
 1 + 2 * 3 / 2
 (1 * 2) + $current.id
-date ??
-time ??
 
 ## 2.Function
 COUNT(1,2)
@@ -28,10 +26,13 @@ COUNT(1,2,current.id)
 COUNT(1,2,1+2)
 COUNT(1,2,SUM(1,2))
 
-## 3.Compare 暂仅支持数字
-(1+20) +179 > 199
-179 = $current.id
-199 < 229
-(1+20) +179 >= 199
-179 <= current.id
-(1+20) +179 <> 199
+## 3.Compare
+1. (1+20) +179 > 199
+2. 199 < 229
+3. 179 = $current.id
+4. 179 <> 199
+5. (1+20) +179 >= 199
+6. 179 <= current.id
+
++ '> < >= <=' 仅支持两个数字之间的比较
++ '= <>' 支持两个数字、boolean、引用类型之间的比较

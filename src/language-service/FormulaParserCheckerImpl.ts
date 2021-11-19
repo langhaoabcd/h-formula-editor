@@ -271,34 +271,42 @@ export class FormulaParserCheckerImpl implements FormulaParserChecker {
     // this.parserMap.set(ctx, new ArgumentItem(new DataType(TYPE.BOOLEAN), ctx));
     const left = this.parserMap.get(ctx.getChild(0)).getDataType() as DataType;
     const right = this.parserMap.get(ctx.getChild(2)).getDataType() as DataType;
-    if (left.isDecimalLike && right.isDecimalLike) {
-      // this.parserMap.set(ctx, new DataType(TYPE.NUMBER));
-    } else {
+    const operator: string = ctx.getChild(1).text;
+    if (JSON.stringify(left) != JSON.stringify(right)) {
+      //运算符 == 不能应用于两个不同类型之间
+      const errModel = new ArgumentErrorModel(ArugumentErrorCode.PARAM_TYPE, `运算符 ${operator} 不能应用于两个不同的类型之间`, 0)
+      this.errors.push({
+        code: errModel.code,
+        endColumn: ctx.stop.stopIndex + 2,
+        endLineNumber: ctx.stop.line,
+        message: `${ctx.text},${errModel.msg},${errModel.detail}`,
+        startColumn: ctx.stop.charPositionInLine + 1,
+        startLineNumber: ctx.stop.line
+      });
+      this.parserMap.set(ctx, new ArgumentItem(new DataType(TYPE.BOOLEAN), ctx));
+      return;
+    }
+    if (['>', '>=', '<', '<='].includes(operator)) {
       if (!left.isDecimalLike) {
-        const param_ctx = this.parserMap.get(ctx.getChild(0)).getCtx();
-        const rightModel = new ArgumentErrorModel(ArugumentErrorCode.PARAM_TYPE, "参数暂仅支持数字", 0)
+        // const param_ctx = this.parserMap.get(ctx.getChild(0)).getCtx();
+        const errModel = new ArgumentErrorModel(ArugumentErrorCode.PARAM_TYPE, `运算符 ${operator} 仅支持两个数字之间的比较`, 0)
+        // this.errors.push({
+        //   code: errModel.code,
+        //   endColumn: param_ctx.stop.stopIndex + 2,
+        //   endLineNumber: param_ctx.stop.line,
+        //   message: `${param_ctx.text},${errModel.msg},${errModel.detail}`,
+        //   startColumn: param_ctx.stop.charPositionInLine + 1,
+        //   startLineNumber: param_ctx.stop.line
+        // });
         this.errors.push({
-          code: rightModel.code,
-          endColumn: param_ctx.stop.stopIndex + 2,
-          endLineNumber: param_ctx.stop.line,
-          message: `${param_ctx.text},${rightModel.msg},${rightModel.detail}`,
-          startColumn: param_ctx.stop.charPositionInLine + 1,
-          startLineNumber: param_ctx.stop.line
+          code: errModel.code,
+          endColumn: ctx.stop.stopIndex + 2,
+          endLineNumber: ctx.stop.line,
+          message: `${ctx.text},${errModel.msg},${errModel.detail}`,
+          startColumn: ctx.stop.charPositionInLine + 1,
+          startLineNumber: ctx.stop.line
         });
       }
-      if (!right.isDecimalLike) {
-        const param_ctx = this.parserMap.get(ctx.getChild(2)).getCtx();
-        const rightModel = new ArgumentErrorModel(ArugumentErrorCode.PARAM_TYPE, "参数暂仅支持数字", 0)
-        this.errors.push({
-          code: rightModel.code,
-          endColumn: param_ctx.stop.stopIndex + 2,
-          endLineNumber: param_ctx.stop.line,
-          message: `${param_ctx.text},${rightModel.msg},${rightModel.detail}`,
-          startColumn: param_ctx.stop.charPositionInLine + 1,
-          startLineNumber: param_ctx.stop.line
-        });
-      }
-      // this.parserMap.set(ctx, new ArgumentItem(new DataType(TYPE.UNKNOW), ctx));
     }
     this.parserMap.set(ctx, new ArgumentItem(new DataType(TYPE.BOOLEAN), ctx));
   }
@@ -320,7 +328,7 @@ export class FormulaParserCheckerImpl implements FormulaParserChecker {
         success: true,
         result: this.parserMap.get(ctx.getChild(0)).getDataType(),
       };
-      if(!this.parseType.result.isUnknow && this.formulaRtType!=undefined){
+      if (!this.parseType.result.isUnknow && this.formulaRtType != undefined) {
         let returnDataType = fromMetaType(this.formulaRtType);
         if (JSON.stringify(returnDataType) != JSON.stringify(this.parseType.result)) {
           this.errors.push({
