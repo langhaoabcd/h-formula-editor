@@ -10,7 +10,14 @@ Check out my articles:
 
 # 特殊函数
 IF 和 SWITCH 返回类型UNKNOW  
-TODAY 和 NOW 没有入参  
+TODAY 和 NOW 无参数 
+
+暂未实现
+ISBLANK  
+CEILINGMATH  
+FLOORMATH  
+SPLIT  
+INCLUDES  
 
 # Formula
 ## 1.BaseMath
