@@ -14,17 +14,17 @@ TODAY 和 NOW 没有入参
 
 # Formula
 ## 1.BaseMath
-1
-"aa"
-current.id
-1 + 2 * 3 / 2
-(1 * 2) + $current.id
+1  
+"aa"  
+current.id  
+1 + 2 * 3 / 2  
+(1 * 2) + $current.id  
 
 ## 2.Function
-COUNT(1,2)
-COUNT(1,2,current.id)
-COUNT(1,2,1+2)
-COUNT(1,2,SUM(1,2))
+COUNT(1,2)  
+COUNT(1,2,current.id)  
+COUNT(1,2,1+2)  
+COUNT(1,2,SUM(1,2))  
 
 ## 3.Compare
 1. (1+20) +179 > 199
