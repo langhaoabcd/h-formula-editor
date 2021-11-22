@@ -5,10 +5,9 @@ import { FieldTypeGet, FormulaParserCheckerImpl } from "./FormulaParserCheckerIm
 import { FormulaParserChecker } from "./FormulaParserChecker";
 import { ParseTreeWalker } from "antlr4ts/tree/ParseTreeWalker";
 import TbexpLangErrorListener, { ITbexpLangError } from "./TbexpLangErrorListener";
-import { ContextResource } from "./schemaMap.data";
-import { MetaValueType } from "@toy-box/meta-schema";
+import { DataType } from "../formulaType";
 
-function parse(code: string = '', getFieldType: FieldTypeGet, schemaMapModel: ContextResource, formulaRtType: MetaValueType): { ast: StatContext, errors: ITbexpLangError[] } {
+function parse(code: string = '', getFieldType: FieldTypeGet, formulaRtType: DataType): { ast: StatContext, errors: ITbexpLangError[] } {
     const inputStream = CharStreams.fromString(code);
     const lexer = new FormulaLexer(inputStream);
     lexer.removeErrorListeners()
@@ -24,7 +23,7 @@ function parse(code: string = '', getFieldType: FieldTypeGet, schemaMapModel: Co
         return { ast, errors };
     }
     const listener: FormulaParserChecker = new FormulaParserCheckerImpl(
-        getFieldType, schemaMapModel, formulaRtType
+        getFieldType, formulaRtType
     );
     ParseTreeWalker.DEFAULT.walk(listener, ast);
     const typeErrors = listener.getErrors();
@@ -35,12 +34,12 @@ function parse(code: string = '', getFieldType: FieldTypeGet, schemaMapModel: Co
     return { ast, errors };
 }
 
-export function parseAndGetASTRoot(code: string, getFieldType: FieldTypeGet, schemaMapModel: ContextResource, formulaRtType: MetaValueType): StatContext {
-    const { ast } = parse(code, getFieldType, schemaMapModel, formulaRtType);
+export function parseAndGetASTRoot(code: string, getFieldType: FieldTypeGet, formulaRtType: DataType): StatContext {
+    const { ast } = parse(code, getFieldType,  formulaRtType);
     return ast;
 }
 
-export function parseAndGetSyntaxErrors(code: string, getFieldType: FieldTypeGet, schemaMapModel: ContextResource, formulaRtType: MetaValueType): ITbexpLangError[] {
-    const { errors } = parse(code, getFieldType, schemaMapModel,formulaRtType);
+export function parseAndGetSyntaxErrors(code: string, getFieldType: FieldTypeGet, formulaRtType: DataType): ITbexpLangError[] {
+    const { errors } = parse(code, getFieldType, formulaRtType);
     return errors;
 }

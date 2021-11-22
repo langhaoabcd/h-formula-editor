@@ -2,15 +2,18 @@ import { MetaValueType } from "@toy-box/meta-schema";
 import { StatContext, VariableContext } from "../ANTLR/FormulaParser";
 import { DataType, fromMetaType, TYPE } from "../formulaType";
 import { parseAndGetSyntaxErrors } from "./Parser";
-import { getTypeHook, ContextResource } from "./schemaMap.data";
+import { ContextResource, getVariableType } from "../tbexp-lang/schemaMap.data";
 import { ITbexpLangError } from "./TbexpLangErrorListener";
 
 export default class TbexpLangLanguageService {
+    private _schemaMapModel: ContextResource;
     validate(code: string, schemaMapModel: ContextResource, formulaRtType: MetaValueType): ITbexpLangError[] {
+        this._schemaMapModel = schemaMapModel;
         let syntaxErrors: ITbexpLangError[] = [];
         if (code) {
             //验证语法格式，参数类型，返回类型
-            syntaxErrors = parseAndGetSyntaxErrors(code, getTypeHook, schemaMapModel, formulaRtType);
+            const rtType = fromMetaType(formulaRtType);
+            syntaxErrors = parseAndGetSyntaxErrors(code, this.varialeTextTypeFromContext, rtType);
             console.log('syntaxErrors', syntaxErrors);
         }
         return syntaxErrors;
@@ -34,6 +37,10 @@ export default class TbexpLangLanguageService {
             // }
         });
         return formattedCode;
+    }
+    varialeTextTypeFromContext = (text:string) => {
+        const vtype = text.indexOf('$') > -1 ? 0 : 1;
+        return getVariableType(this._schemaMapModel, text, vtype);
     }
 }
 

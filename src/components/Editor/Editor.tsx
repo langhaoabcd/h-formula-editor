@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as monaco from 'monaco-editor-core';
-import { ContextResource } from '../../language-service/schemaMap.data';
+import { ContextResource } from '../../tbexp-lang/schemaMap.data';
 import { setupLanguage } from '../../tbexp-lang/setup';
 import { IFieldMeta, MetaValueType } from '@toy-box/meta-schema';
 import { languageID } from '../../tbexp-lang/config';

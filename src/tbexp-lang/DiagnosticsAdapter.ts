@@ -2,7 +2,7 @@ import * as monaco from "monaco-editor-core";
 import { WorkerAccessor } from "./setup";
 import { languageID } from "./config";
 import { ITbexpLangError } from "../language-service/TbexpLangErrorListener";
-import { ContextResource } from "../language-service/schemaMap.data";
+import { ContextResource } from "./schemaMap.data";
 import { MetaValueType } from "@toy-box/meta-schema";
 
 export default class DiagnosticsAdapter {

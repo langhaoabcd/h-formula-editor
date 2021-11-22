@@ -9,9 +9,6 @@ import { TYPE } from "../formulaType/types";
 import { formulaType } from "../formulaType";
 import { ITbexpLangError } from "./TbexpLangErrorListener";
 import { ArgumentErrorModel, ValidateException, ArugumentErrorCode, GetArugumentErrorCodeMsg, } from "./exception/ValidateException";
-import { getVariableType, ContextResource } from "./schemaMap.data";
-import { MetaValueType } from "@toy-box/meta-schema";
-// import { getVariableType } from "./schemaMap.data";
 
 export type FieldTypeGet = (pattern: string) => DataType;
 export class FormulaParserCheckerImpl implements FormulaParserChecker {
@@ -20,12 +17,10 @@ export class FormulaParserCheckerImpl implements FormulaParserChecker {
   private getFieldType: FieldTypeGet;
   private parseType: ParseType;
   private errors: ITbexpLangError[];
-  private schemaMapModel: ContextResource
-  private formulaRtType: MetaValueType
+  private formulaRtType: DataType
 
-  constructor(getFieldType: FieldTypeGet, schemaMapModel: ContextResource, returnType: MetaValueType) {
+  constructor(getFieldType: FieldTypeGet, returnType: DataType) {
     this.getFieldType = getFieldType;
-    this.schemaMapModel = schemaMapModel;
     this.formulaRtType = returnType;
     this.parseType = {
       success: false,
@@ -57,24 +52,21 @@ export class FormulaParserCheckerImpl implements FormulaParserChecker {
   exitEveryRule?: (ctx: ParserRuleContext) => void;
 
   exitBooleanLiteralExpression(ctx: BooleanLiteralExpressionContext) {
-    // this.parserMap.set(ctx, new DataType(TYPE.BOOLEAN));
     this.parserMap.set(ctx, new ArgumentItem(new DataType(TYPE.BOOLEAN), ctx));
   }
 
   exitDecimalLiteralExpression(ctx: DecimalLiteralExpressionContext) {
-    // this.parserMap.set(ctx, new DataType(TYPE.NUMBER));
     this.parserMap.set(ctx, new ArgumentItem(new DataType(TYPE.NUMBER), ctx));
   }
 
   exitStringLiteralExpression(ctx: StringLiteralExpressionContext) {
-    // this.parserMap.set(ctx, new DataType(TYPE.STRING));
     this.parserMap.set(ctx, new ArgumentItem(new DataType(TYPE.STRING), ctx));
   }
 
   exitVariableExpression(ctx: VariableExpressionContext) {
     const text = ctx.variable().FieldLiteral().text;
-    // const dtype = this.getFieldType(text);//注入的方式
-    const dtype = getVariableType(this.schemaMapModel, text, text.indexOf('$') > -1 ? 0 : 1);
+    const dtype = this.getFieldType(text);//注入的方式
+    // const dtype = getVariableType(this.schemaMapModel, text, text.indexOf('$') > -1 ? 0 : 1);
     this.parserMap.set(
       ctx,
       new ArgumentItem(dtype, ctx),
@@ -83,27 +75,9 @@ export class FormulaParserCheckerImpl implements FormulaParserChecker {
 
   exitFunction(ctx: FunctionContext) {
     const argsItem = this.parserMap.get(ctx.getChild(1)).datatype;
-    // if ((argsItem as DataType).isNull) {
-    //   this.errors.push({
-    //     code: ArugumentErrorCode.PARAM_NULL,
-    //     endColumn: ctx.stop.stopIndex + 2,
-    //     endLineNumber: ctx.stop.line,
-    //     message: `${ctx.text},参数不为空`,
-    //     startColumn: ctx.stop.charPositionInLine + 1,
-    //     startLineNumber: ctx.stop.line
-    //   });
-    //   this.parserMap.set(ctx, new ArgumentItem(new DataType(TYPE.UNKNOW), ctx));
-    //   return;
-    // }
     const args = ctx.getChild(1).childCount > 2 ? argsItem.map(x => x.datatype) : [];
     const fn = formulaType[ctx.getChild(0).text.toUpperCase()];
     if (fn == undefined) {
-      // this.parseException = new ParserException('function not exists');
-      // this.parseType = {
-      //   success: false,
-      //   result: new DataType(TYPE.UNKNOW),
-      // };
-      // this.parserMap.set(ctx, new DataType(TYPE.UNKNOW));
       this.errors.push({
         code: ArugumentErrorCode.FUNCTION_NULL,
         endColumn: ctx.stop.stopIndex + 2,
@@ -116,7 +90,6 @@ export class FormulaParserCheckerImpl implements FormulaParserChecker {
     } else {
       try {
         const funcVal = fn(...args);
-        // this.parserMap.set(ctx, funcVal);
         this.parserMap.set(ctx, new ArgumentItem(funcVal, ctx));
       } catch (err) {
         if (err instanceof ValidateException) {
@@ -150,7 +123,6 @@ export class FormulaParserCheckerImpl implements FormulaParserChecker {
   }
 
   exitFunctionExpression(ctx: FunctionExpressionContext) {
-    // this.parserMap.set(ctx, this.parserMap.get(ctx.getChild(0)));
     this.parserMap.set(ctx, new ArgumentItem(this.parserMap.get(ctx.getChild(0)).getDataType(), ctx));
   }
 
@@ -159,9 +131,7 @@ export class FormulaParserCheckerImpl implements FormulaParserChecker {
       //函数没有参数
       this.parserMap.set(ctx, new ArgumentItem(new DataType(TYPE.NULL), ctx));
       return;
-      // throw new ArgumentException([new ArgumentErrorModel(ArugumentErrorCode.PARAM_NULL, "参数非空", 0)]);
     }
-    // this.parserMap.set(ctx, this.parserMap.get(ctx.getChild(1)));
     this.parserMap.set(ctx, new ArgumentItem(this.parserMap.get(ctx.getChild(1)).getDataType(), ctx));
   }
 
@@ -172,13 +142,11 @@ export class FormulaParserCheckerImpl implements FormulaParserChecker {
         args.push(this.parserMap.get(ctx.getChild(i)));
       }
     }
-    // this.parserMap.set(ctx, args);
     this.parserMap.set(ctx, new ArgumentItem(args, ctx));
   }
 
   exitArgument(ctx: ArgumentContext) {
     console.log('argument:' + ctx.text);
-    // this.parserMap.set(ctx, this.parserMap.get(ctx.getChild(0)));
     this.parserMap.set(ctx, new ArgumentItem(this.parserMap.get(ctx.getChild(0)).getDataType(), ctx));
   }
 
@@ -213,31 +181,15 @@ export class FormulaParserCheckerImpl implements FormulaParserChecker {
         });
       }
       this.parserMap.set(ctx, new ArgumentItem(new DataType(TYPE.UNKNOW), ctx));
-
-      // this.parseException = new ParserException('additive expression error');
-      // this.parseType = {
-      //   success: false,
-      //   result: new DataType(TYPE.UNKNOW),
-      // };
     }
   }
 
   exitMultiplicativeExpression(ctx: MultiplicativeExpressionContext) {
-    // const left = this.parserMap.get(ctx.getChild(0)) as DataType;
-    // const right = this.parserMap.get(ctx.getChild(2)) as DataType;
     const left = this.parserMap.get(ctx.getChild(0)).getDataType() as DataType;
     const right = this.parserMap.get(ctx.getChild(2)).getDataType() as DataType;
     if (left.isDecimalLike && right.isDecimalLike) {
-      // this.parserMap.set(ctx, new DataType(TYPE.NUMBER));
       this.parserMap.set(ctx, new ArgumentItem(new DataType(TYPE.NUMBER), ctx));
     } else {
-      // this.parseException = new ParserException(
-      //   'multiplicative expression error',
-      // );
-      // this.parseType = {
-      //   success: false,
-      //   result: new DataType(TYPE.UNKNOW),
-      // };
       if (!left.isDecimalLike) {
         const param_ctx = this.parserMap.get(ctx.getChild(0)).getCtx();
         const rightModel = new ArgumentErrorModel(ArugumentErrorCode.PARAM_TYPE, "参数非数字", 0)
@@ -267,8 +219,6 @@ export class FormulaParserCheckerImpl implements FormulaParserChecker {
   }
 
   exitCompareExpression(ctx: CompareExpressionContext) {
-    // this.parserMap.set(ctx, new DataType(TYPE.BOOLEAN));
-    // this.parserMap.set(ctx, new ArgumentItem(new DataType(TYPE.BOOLEAN), ctx));
     const left = this.parserMap.get(ctx.getChild(0)).getDataType() as DataType;
     const right = this.parserMap.get(ctx.getChild(2)).getDataType() as DataType;
     const operator: string = ctx.getChild(1).text;
@@ -288,16 +238,7 @@ export class FormulaParserCheckerImpl implements FormulaParserChecker {
     }
     if (['>', '>=', '<', '<='].includes(operator)) {
       if (!left.isDecimalLike) {
-        // const param_ctx = this.parserMap.get(ctx.getChild(0)).getCtx();
         const errModel = new ArgumentErrorModel(ArugumentErrorCode.PARAM_TYPE, `运算符 ${operator} 仅支持两个数字之间的比较`, 0)
-        // this.errors.push({
-        //   code: errModel.code,
-        //   endColumn: param_ctx.stop.stopIndex + 2,
-        //   endLineNumber: param_ctx.stop.line,
-        //   message: `${param_ctx.text},${errModel.msg},${errModel.detail}`,
-        //   startColumn: param_ctx.stop.charPositionInLine + 1,
-        //   startLineNumber: param_ctx.stop.line
-        // });
         this.errors.push({
           code: errModel.code,
           endColumn: ctx.stop.stopIndex + 2,
@@ -312,7 +253,6 @@ export class FormulaParserCheckerImpl implements FormulaParserChecker {
   }
 
   exitParenthesizedExpression(ctx: ParenthesizedExpressionContext) {
-    // this.parserMap.set(ctx, this.parserMap.get(ctx.getChild(1)));
     this.parserMap.set(ctx, new ArgumentItem(this.parserMap.get(ctx.getChild(1)).getDataType(), ctx));
   }
 
@@ -321,16 +261,14 @@ export class FormulaParserCheckerImpl implements FormulaParserChecker {
       this.parseType = {
         success: false,
         result: new DataType(TYPE.UNKNOW),
-        // errors: [this.parseException.message]
       };
     } else {
       this.parseType = {
         success: true,
         result: this.parserMap.get(ctx.getChild(0)).getDataType(),
       };
-      if (!this.parseType.result.isUnknow && this.formulaRtType != undefined) {
-        let returnDataType = fromMetaType(this.formulaRtType);
-        if (JSON.stringify(returnDataType) != JSON.stringify(this.parseType.result)) {
+      if (!this.parseType.result.isUnknow && !this.formulaRtType.isUnknow) {
+        if (JSON.stringify(this.formulaRtType) != JSON.stringify(this.parseType.result)) {
           this.errors.push({
             code: ArugumentErrorCode.RETURN_TYPE,
             endColumn: ctx.stop.stopIndex + 2,
@@ -345,7 +283,6 @@ export class FormulaParserCheckerImpl implements FormulaParserChecker {
   }
 
   exitSingleExpression(ctx: SingleExpressionContext) {
-    // this.parserMap.set(ctx, this.parserMap.get(ctx.getChild(0)));
     this.parserMap.set(ctx, new ArgumentItem(this.parserMap.get(ctx.getChild(0)).getDataType(), ctx));
   }
 
@@ -357,7 +294,6 @@ export class FormulaParserCheckerImpl implements FormulaParserChecker {
     return this.errors;
   }
 }
-
 export class ParserException extends Error {
   constructor(message: string) {
     super(message);

@@ -1,7 +1,7 @@
 
 import { IFieldMeta, MetaValueType } from "@toy-box/meta-schema";
 import { DataType, fromMetaType, TYPE } from "../formulaType";
-import { DataValueType } from "./FormulaParserChecker";
+import { DataValueType } from "../language-service/FormulaParserChecker";
 
 export const getTypeHook = (variable: string) => {
   if (variable === "id") {

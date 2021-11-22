@@ -8,7 +8,7 @@ import TodoLangFormattingProvider from "./tbexpLangFormattingProvider";
 import { IFieldMeta, MetaValueType } from "@toy-box/meta-schema";
 import { functionNames } from "./tbexp.function";
 import { IRange } from "monaco-editor-core";
-import { getPathMeta, ContextResource } from "../language-service/schemaMap.data";
+import { getPathMeta, ContextResource } from "./schemaMap.data";
 import { theme } from "./tbexp.theme";
 
 const VariablePrefix = '$';

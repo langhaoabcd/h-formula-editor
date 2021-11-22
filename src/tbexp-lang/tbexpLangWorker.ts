@@ -3,7 +3,7 @@ import * as monaco from "monaco-editor-core";
 import IWorkerContext = monaco.worker.IWorkerContext;
 import TodoLangLanguageService from "../language-service/LanguageService";
 import { ITbexpLangError, ITbexpLangErrorAndCode } from "../language-service/TbexpLangErrorListener";
-import { ContextResource } from "../language-service/schemaMap.data";
+import { ContextResource } from "./schemaMap.data";
 import { MetaValueType } from "@toy-box/meta-schema";
 
 
