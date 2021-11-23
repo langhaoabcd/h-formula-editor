@@ -8,7 +8,8 @@ Check out my articles:
 [Part 2: Implement language services, auto-completion, syntax and semantic validation and auto-formatting](https://medium.com/better-programming/create-a-custom-web-editor-using-typescript-react-antlr-and-monaco-editor-bcfc7554e446)  
 
 ## 关于本项目
-在TodoLangEditor的基础上，实现了自定义的Excel公式解析器  
+在TodoLangEditor的基础上，实现自定义的Excel公式编辑器，语法分析器，语法解析器
+![演示](/des.gif)
 
 # 特殊函数
 IF 和 SWITCH 返回类型UNKNOW  
@@ -22,6 +23,7 @@ SPLIT
 INCLUDES  
 
 # Formula
+
 ## 1.BaseMath
 1  
 "aa"  
